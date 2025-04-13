@@ -225,12 +225,21 @@
     <Compile Include="Forms\AddHashtagForm.Designer.cs">
       <DependentUpon>AddHashtagForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\EditHashtagForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EditHashtagForm.Designer.cs">
+      <DependentUpon>EditHashtagForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="HashtagStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="Forms\AddHashtagForm.resx">
       <DependentUpon>AddHashtagForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditHashtagForm.resx">
+      <DependentUpon>EditHashtagForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

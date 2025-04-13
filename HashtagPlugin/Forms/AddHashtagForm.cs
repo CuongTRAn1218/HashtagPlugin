@@ -82,8 +82,6 @@ namespace HashtagPlugin.Forms
                 {
                     mail.Body = AppendHashtag(mail.Body, hashtag);
                     mail.Save();
-                   
-
                 }
                 else if (item is Outlook.AppointmentItem appointment)
                 {
@@ -92,7 +90,6 @@ namespace HashtagPlugin.Forms
                 }
                 else if (item is Outlook.ContactItem contact)
                 {
-                    
                     contact.Body = AppendHashtag(contact.Body, hashtag);
                     contact.Save();
                 }

@@ -63,7 +63,8 @@
             // RibbonMailRead
             // 
             this.Name = "RibbonMailRead";
-            this.RibbonType = "Microsoft.Outlook.Mail.Read";
+            this.RibbonType = "Microsoft.Outlook.Appointment, Microsoft.Outlook.Contact, Microsoft.Outlook.Mail." +
+    "Read";
             this.Tabs.Add(this.tab1);
             this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.RibbonMailRead_Load);
             this.tab1.ResumeLayout(false);
