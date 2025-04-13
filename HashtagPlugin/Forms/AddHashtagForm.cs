@@ -78,22 +78,27 @@ namespace HashtagPlugin.Forms
             if (explorer.Selection.Count > 0)
             {
                 object item = explorer.Selection[1];
+                string itemId = null;
                 if (item is Outlook.MailItem mail)
                 {
                     mail.Body = AppendHashtag(mail.Body, hashtag);
                     mail.Save();
+                    itemId = mail.EntryID;
                 }
                 else if (item is Outlook.AppointmentItem appointment)
                 {
                     appointment.Body = AppendHashtag(appointment.Body, hashtag);
                     appointment.Save();
+                    itemId = appointment.EntryID;
                 }
                 else if (item is Outlook.ContactItem contact)
                 {
                     contact.Body = AppendHashtag(contact.Body, hashtag);
                     contact.Save();
+                    itemId = contact.EntryID;
                 }
                 HashtagStorage.addHashtag(hashtag);
+                HashtagStorage.addItemHashtag(itemId, hashtag);
                 MessageBox.Show("Added hashtag: " + hashtag);
                 this.Close();
             }

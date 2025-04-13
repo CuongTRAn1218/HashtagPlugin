@@ -21,7 +21,7 @@ namespace HashtagPlugin.Forms
             InitializeComponent();
             this.mailItem = mailItem;
             this.originalContent = mailItem.Body;
-            loadHashtags(mailItem.Body);
+            loadHashtags(mailItem.EntryID);
         }
 
         public EditHashtagForm(Outlook.AppointmentItem appointmentItem)
@@ -29,30 +29,48 @@ namespace HashtagPlugin.Forms
             InitializeComponent();
             this.appointmentItem = appointmentItem;
             this.originalContent = appointmentItem.Body;
-            loadHashtags(appointmentItem.Body);
+            loadHashtags(appointmentItem.EntryID);
         }
 
         public EditHashtagForm(Outlook.ContactItem contactItem)
         {
             InitializeComponent();
             this.contactItem = contactItem;
-            this.originalContent = contactItem.Body;  // Contact's notes field
-            loadHashtags(contactItem.Body);
+            this.originalContent = contactItem.Body;
+            loadHashtags(contactItem.EntryID);
         }
 
-        private void loadHashtags(string content)
+        //private void loadHashtags(string content)
+        //{
+        //    List<string> hashtags = extractHashtags(content);
+        //    foreach (string hashtag in hashtags)
+        //    {
+        //        var tagButton = createHashtag(hashtag);
+        //        flpHashtags.Controls.Add(tagButton);
+        //    }
+        //}
+        private void loadHashtags(string itemId)
         {
-            List<string> hashtags = extractHashtags(content);
-            foreach (string hashtag in hashtags)
+            var itemHashtags = HashtagStorage.loadItemHashtags();
+            if (itemHashtags.ContainsKey(itemId))
             {
-                var tagButton = createHashtag(hashtag);
-                flpHashtags.Controls.Add(tagButton);
+                List<string> hashtags = itemHashtags[itemId];
+                foreach (string hashtag in hashtags)
+                {
+                    var tagButton = createHashtag(hashtag);
+                    flpHashtags.Controls.Add(tagButton);
+                }
             }
         }
 
         private List<string> extractHashtags(string content)
         {
-            Regex regex = new Regex(@"#\w+");
+            int delimiterIndex = content.IndexOf("-----");
+            string searchArea = delimiterIndex != -1
+                ? content.Substring(delimiterIndex + "-----".Length)
+                : content;
+
+            Regex regex = new Regex(@"#\w[\w\-]*");
             MatchCollection matches = regex.Matches(content);
             List<string> hashtags = new List<string>();
             foreach (Match match in matches)
@@ -82,24 +100,49 @@ namespace HashtagPlugin.Forms
         {
             var button = sender as Button;
             var tag = button?.Tag.ToString();
+            string itemId = null;
 
             if (MessageBox.Show($"Are you sure you want to remove the tag {tag}?", "Confirm Removal", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 if (mailItem != null)
+                {
                     this.mailItem.Body = RemoveTagFromBody(this.mailItem.Body, tag);
+                    itemId = mailItem.EntryID;
+                }
+                   
                 else if (appointmentItem != null)
+                {
                     this.appointmentItem.Body = RemoveTagFromBody(this.appointmentItem.Body, tag);
+                    itemId = appointmentItem.EntryID;
+                }
+                   
                 else if (contactItem != null)
+                {
                     this.contactItem.Body = RemoveTagFromBody(this.contactItem.Body, tag);
+                    itemId = contactItem.EntryID;
+                }
 
+                HashtagStorage.removeItemHashtag(itemId, tag);
                 flpHashtags.Controls.Remove(button);
             }
         }
 
         private string RemoveTagFromBody(string body, string tagToRemove)
         {
-            var tags = body.Split(' ').Where(t => t != tagToRemove).ToList();
-            return string.Join(" ", tags);
+            const string delimiter = "-----";
+            int delimiterIndex = body.IndexOf(delimiter);
+
+            if (delimiterIndex != -1)
+            {
+                string before = body.Substring(0, delimiterIndex + delimiter.Length);
+                string after = body.Substring(delimiterIndex + delimiter.Length).Trim();
+
+                var tags = after.Split(' ').Where(t => !t.Equals(tagToRemove, StringComparison.OrdinalIgnoreCase)).ToList();
+                string newAfter = string.Join(" ", tags);
+
+                return before + Environment.NewLine + newAfter;
+            }
+            return body;
         }
 
         private void ReloadForm()
