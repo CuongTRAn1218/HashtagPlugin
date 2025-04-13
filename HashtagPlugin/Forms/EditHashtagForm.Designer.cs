@@ -95,7 +95,7 @@
             this.Controls.Add(this.flpHashtags);
             this.Name = "EditHashtagForm";
             this.Text = "Edit Hashtag";
-      
+            this.Load += new System.EventHandler(this.EditHashtagForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

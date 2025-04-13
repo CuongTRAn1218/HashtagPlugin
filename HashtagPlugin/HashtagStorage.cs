@@ -13,7 +13,7 @@ namespace HashtagPlugin
         private static readonly string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "HashtagsPluginStorage");
         private static readonly string hashtagsFile = Path.Combine(path, "Hashtags.json");
         private static readonly string itemHashtagsFile = Path.Combine(path, "ItemHashtags.json");
-        public static List<string> loagHashtags()
+        public static List<string> loadHashtags()
         {
             if (File.Exists(hashtagsFile))
             {
@@ -32,19 +32,21 @@ namespace HashtagPlugin
             File.WriteAllText(hashtagsFile, json);
         }
 
-        public static void addHashtag(string hashtag)
+        public static bool addHashtag(string hashtag)
         {
-            List<string> hashtags = loagHashtags();
+            List<string> hashtags = loadHashtags();
             if (!hashtags.Contains(hashtag))
             {
                 hashtags.Add(hashtag);
                 saveHashtags(hashtags);
+                return true;
             }
+            return false;
         }
 
         public static void removeHashtag(string hashtag)
         {
-            List<string> hashtags = loagHashtags();
+            List<string> hashtags = loadHashtags();
             if (hashtags.Remove(hashtag))
             {
                 saveHashtags(hashtags);

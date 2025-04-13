@@ -25,5 +25,11 @@ namespace HashtagPlugin
 
             }
         }
+
+        private void btnViewHashtags_Click(object sender, RibbonControlEventArgs e)
+        {
+            var form = new ViewHashtagsForm();
+            form.ShowDialog();
+        }
     }
 }

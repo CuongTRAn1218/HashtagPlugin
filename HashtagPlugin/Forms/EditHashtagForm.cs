@@ -207,5 +207,10 @@ namespace HashtagPlugin.Forms
                 ReloadForm();
             }
         }
+
+        private void EditHashtagForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

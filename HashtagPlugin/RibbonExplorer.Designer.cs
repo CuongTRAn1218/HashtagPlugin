@@ -36,9 +36,9 @@
         {
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
+            this.btnAddHashtag = this.Factory.CreateRibbonButton();
             this.btnSearch = this.Factory.CreateRibbonButton();
             this.btnViewHashtags = this.Factory.CreateRibbonButton();
-            this.btnAddHashtag = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -58,6 +58,12 @@
             this.group1.Label = "Hashtag Tools";
             this.group1.Name = "group1";
             // 
+            // btnAddHashtag
+            // 
+            this.btnAddHashtag.Label = "Add Hashtag";
+            this.btnAddHashtag.Name = "btnAddHashtag";
+            this.btnAddHashtag.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnAddHashtag_Click);
+            // 
             // btnSearch
             // 
             this.btnSearch.Label = "Search by Hashtags";
@@ -67,12 +73,7 @@
             // 
             this.btnViewHashtags.Label = "View Hashtags";
             this.btnViewHashtags.Name = "btnViewHashtags";
-            // 
-            // btnAddHashtag
-            // 
-            this.btnAddHashtag.Label = "Add Hashtag";
-            this.btnAddHashtag.Name = "btnAddHashtag";
-            this.btnAddHashtag.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnAddHashtag_Click);
+            this.btnViewHashtags.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnViewHashtags_Click);
             // 
             // RibbonExplorer
             // 

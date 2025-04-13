@@ -45,7 +45,7 @@ namespace HashtagPlugin.Forms
         }
         private void loadExistingHashtags()
         {
-            List<string> hashtags = HashtagStorage.loagHashtags();
+            List<string> hashtags = HashtagStorage.loadHashtags();
             cbHashtags.Items.Clear();
             cbHashtags.Items.AddRange(hashtags.ToArray());
 
