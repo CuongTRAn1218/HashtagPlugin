@@ -68,6 +68,7 @@
             // 
             this.btnSearch.Label = "Search by Hashtags";
             this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnSearch_Click);
             // 
             // btnViewHashtags
             // 

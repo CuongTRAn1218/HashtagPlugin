@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static HashtagPlugin.Forms.RemoveHashtagPromptForm;
 using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace HashtagPlugin.Forms
@@ -15,6 +16,7 @@ namespace HashtagPlugin.Forms
     public partial class ViewHashtagsForm : Form
     {
         private readonly Outlook.Application outlookApp;
+
         public ViewHashtagsForm()
         {
             InitializeComponent();
@@ -25,6 +27,7 @@ namespace HashtagPlugin.Forms
             dgvHashtags.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dgvHashtags.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dgvHashtags.AllowUserToOrderColumns = true;
+            dgvHashtags.SelectionChanged += dgvHashtags_SelectionChanged;
             outlookApp = new Outlook.Application();
         }
 
@@ -100,6 +103,7 @@ namespace HashtagPlugin.Forms
             loadHashtagsData();
         }
 
+
         private void btnAddHashtag_Click(object sender, EventArgs e)
         {
             string hashtag = txtNewhashtag.Text;
@@ -134,41 +138,55 @@ namespace HashtagPlugin.Forms
 
                 string selectedHashtag = selectedRow.Cells["Hashtag"].Value.ToString();
                 int count = int.Parse(selectedRow.Cells["Count"].Value.ToString());
-                string usedIn = selectedRow.Cells["UsedIn"].Value.ToString();   
-
+                string usedIn = selectedRow.Cells["UsedIn"].Value.ToString();
+                
                 if (count > 0)
                 {
-                    if (MessageBox.Show($"This hashtag is used in {count} items:\n{usedIn}\n Are you sure you want to remove it?",
-                                        "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    var prompt = new RemoveHashtagPromptForm(selectedHashtag, count, usedIn);
+                    var dialogResult = prompt.ShowDialog();
+                    if (dialogResult == DialogResult.OK)
                     {
-                        HashtagStorage.removeHashtag(selectedHashtag);
-                        var itemHashtags = HashtagStorage.loadItemHashtags();
-                        foreach (var item in itemHashtags)
+                        var choice = prompt.UserChoice;
+                        if(choice == RemoveHashtagChoice.Cancel)
                         {
-                            if (item.Value.Contains(selectedHashtag))
+                            HashtagStorage.removeHashtag(selectedHashtag);
+                            var itemHashtags = HashtagStorage.loadItemHashtags();
+                            foreach (var item in itemHashtags)
                             {
-                                HashtagStorage.removeItemHashtag(item.Key, selectedHashtag);
+                                if (item.Value.Contains(selectedHashtag))
+                                {
+                                    HashtagStorage.removeItemHashtag(item.Key, selectedHashtag);
+                                }
+                                object itemObj = outlookApp.Session.GetItemFromID(item.Key);
+                                if (itemObj is Outlook.MailItem mail)
+                                {
+                                    mail.Body = RemoveTagFromBody(mail.Body, selectedHashtag);
+                                    mail.Save();
+                                }
+                                else if (itemObj is Outlook.AppointmentItem appointment)
+                                {
+                                    appointment.Body = RemoveTagFromBody(appointment.Body, selectedHashtag);
+                                    appointment.Save();
+                                }
+                                else if (itemObj is Outlook.ContactItem contact)
+                                {
+                                    contact.Body = RemoveTagFromBody(contact.Body, selectedHashtag);
+                                    contact.Save();
+                                }
                             }
-                            object itemObj = outlookApp.Session.GetItemFromID(item.Key);
-                            if (itemObj is Outlook.MailItem mail)
-                            {
-                                mail.Body = RemoveTagFromBody(mail.Body, selectedHashtag);
-                                mail.Save();
-                            }
-                            else if (itemObj is Outlook.AppointmentItem appointment)
-                            {
-                                appointment.Body = RemoveTagFromBody(appointment.Body, selectedHashtag);
-                                appointment.Save();
-                            }
-                            else if (itemObj is Outlook.ContactItem contact)
-                            {
-                                contact.Body = RemoveTagFromBody(contact.Body, selectedHashtag);
-                                contact.Save();
-                            }
+
+
+                            MessageBox.Show($"Removed '{selectedHashtag}' successfully.");
+                        }else if(choice == RemoveHashtagChoice.ViewItems)
+                        {
+                            var form = new UsedHashtagsForm(selectedHashtag);
+                            form.Show();
+                        }
+                        else
+                        {
+                            return;
                         }
                         
-
-                        MessageBox.Show($"Removed '{selectedHashtag}' successfully.");
                     }
                 }
                 else
@@ -203,6 +221,26 @@ namespace HashtagPlugin.Forms
                 return before + Environment.NewLine + newAfter;
             }
             return body;
+        }
+
+        private void dgvHashtags_SelectionChanged(object sender, EventArgs e)
+        {
+            btnViewItems.Enabled = dgvHashtags.SelectedCells.Count > 0 || dgvHashtags.SelectedRows.Count > 0;
+        }
+
+        private void btnViewItems_Click(object sender, EventArgs e)
+        {
+            if (dgvHashtags.SelectedRows.Count > 0)
+            {
+                var selectedRow = dgvHashtags.SelectedRows[0];
+                string selectedHashtag = selectedRow.Cells["Hashtag"].Value?.ToString();
+
+                if (!string.IsNullOrEmpty(selectedHashtag))
+                {
+                    var form = new UsedHashtagsForm(selectedHashtag);
+                    form.Show();
+                }
+            }
         }
     }
 }

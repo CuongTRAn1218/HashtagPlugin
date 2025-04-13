@@ -33,6 +33,7 @@
             this.txtNewhashtag = new System.Windows.Forms.TextBox();
             this.btnAddHashtag = new System.Windows.Forms.Button();
             this.btnRemoveHashtag = new System.Windows.Forms.Button();
+            this.btnViewItems = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvHashtags)).BeginInit();
             this.SuspendLayout();
             // 
@@ -67,7 +68,7 @@
             // 
             this.btnAddHashtag.Location = new System.Drawing.Point(344, 363);
             this.btnAddHashtag.Name = "btnAddHashtag";
-            this.btnAddHashtag.Size = new System.Drawing.Size(75, 23);
+            this.btnAddHashtag.Size = new System.Drawing.Size(75, 25);
             this.btnAddHashtag.TabIndex = 3;
             this.btnAddHashtag.Text = "Add";
             this.btnAddHashtag.UseVisualStyleBackColor = true;
@@ -75,19 +76,33 @@
             // 
             // btnRemoveHashtag
             // 
-            this.btnRemoveHashtag.Location = new System.Drawing.Point(713, 363);
+            this.btnRemoveHashtag.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnRemoveHashtag.Location = new System.Drawing.Point(681, 364);
             this.btnRemoveHashtag.Name = "btnRemoveHashtag";
-            this.btnRemoveHashtag.Size = new System.Drawing.Size(75, 23);
+            this.btnRemoveHashtag.Size = new System.Drawing.Size(107, 25);
             this.btnRemoveHashtag.TabIndex = 4;
             this.btnRemoveHashtag.Text = "Remove";
             this.btnRemoveHashtag.UseVisualStyleBackColor = true;
             this.btnRemoveHashtag.Click += new System.EventHandler(this.btnRemoveHashtag_Click);
+            // 
+            // btnViewItems
+            // 
+            this.btnViewItems.Enabled = false;
+            this.btnViewItems.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnViewItems.Location = new System.Drawing.Point(454, 364);
+            this.btnViewItems.Name = "btnViewItems";
+            this.btnViewItems.Size = new System.Drawing.Size(221, 25);
+            this.btnViewItems.TabIndex = 5;
+            this.btnViewItems.Text = "View items with this hashtag";
+            this.btnViewItems.UseVisualStyleBackColor = true;
+            this.btnViewItems.Click += new System.EventHandler(this.btnViewItems_Click);
             // 
             // ViewHashtagsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 399);
+            this.Controls.Add(this.btnViewItems);
             this.Controls.Add(this.btnRemoveHashtag);
             this.Controls.Add(this.btnAddHashtag);
             this.Controls.Add(this.txtNewhashtag);
@@ -109,5 +124,6 @@
         private System.Windows.Forms.TextBox txtNewhashtag;
         private System.Windows.Forms.Button btnAddHashtag;
         private System.Windows.Forms.Button btnRemoveHashtag;
+        private System.Windows.Forms.Button btnViewItems;
     }
 }
