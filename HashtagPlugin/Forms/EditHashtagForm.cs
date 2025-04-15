@@ -83,7 +83,7 @@ namespace HashtagPlugin.Forms
         private Button createHashtag(string tag)
         {
             var tagButton = new Button();
-            tagButton.Text = $"{tag} X";
+            tagButton.Text = $"{tag} ✕";
             tagButton.Font = new Font("Arial", 10);
             tagButton.Tag = tag;
             tagButton.BackColor = Color.LightGray;

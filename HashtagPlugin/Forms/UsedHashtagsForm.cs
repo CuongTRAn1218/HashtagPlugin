@@ -102,15 +102,15 @@ namespace HashtagPlugin.Forms
 
             if (item is Outlook.MailItem mail)
             {
-                displayText = $"\uD83D\uDCE7 {mail.Subject}\nFrom: {mail.SenderName}\nReceived: {mail.ReceivedTime}";
+                displayText = $"\u2709 {mail.Subject}\nFrom: {mail.SenderName}\nReceived: {mail.ReceivedTime}";
             }
             else if (item is Outlook.AppointmentItem appt)
             {
-                displayText = $"\uD83D\uDCC5 {appt.Subject}\nStart: {appt.Start:g}\nLocation: {appt.Location}";
+                displayText = $"\u1F4C {appt.Subject}\nStart: {appt.Start:g}\nLocation: {appt.Location}";
             }
             else if (item is Outlook.ContactItem contact)
             {
-                displayText = $"\uD83D\uDC64 {contact.FullName}\nEmail: {contact.Email1Address}\nCompany: {contact.CompanyName}";
+                displayText = $"\u1F4D {contact.FullName}\nEmail: {contact.Email1Address}\nCompany: {contact.CompanyName}";
             }
             else
             {

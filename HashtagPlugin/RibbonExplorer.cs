@@ -34,7 +34,8 @@ namespace HashtagPlugin
 
         private void btnSearch_Click(object sender, RibbonControlEventArgs e)
         {
-            
+            var form = new SearchHashtagForm();
+            form.ShowDialog();
         }
     }
 }

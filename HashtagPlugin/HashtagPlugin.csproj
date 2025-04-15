@@ -237,6 +237,12 @@
     <Compile Include="Forms\RemoveHashtagPromptForm.Designer.cs">
       <DependentUpon>RemoveHashtagPromptForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\SearchHashtagForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SearchHashtagForm.Designer.cs">
+      <DependentUpon>SearchHashtagForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\UsedHashtagsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -261,6 +267,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\RemoveHashtagPromptForm.resx">
       <DependentUpon>RemoveHashtagPromptForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SearchHashtagForm.resx">
+      <DependentUpon>SearchHashtagForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UsedHashtagsForm.resx">
       <DependentUpon>UsedHashtagsForm.cs</DependentUpon>
