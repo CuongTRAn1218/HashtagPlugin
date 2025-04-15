@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Outlook = Microsoft.Office.Interop.Outlook;
-
+using HashtagPlugin.Service;
 namespace HashtagPlugin.Forms
 {
     public partial class UsedHashtagsForm : Form
@@ -18,12 +18,13 @@ namespace HashtagPlugin.Forms
         {
             InitializeComponent();
             this.selectedHashtag = selectedhashtag;
+            this.TopMost = true;
         }
 
         private void UsedHashtagsForm_Load(object sender, EventArgs e)
         {
             var outlookApp = Globals.ThisAddIn.Application;
-            var itemHashtags = HashtagStorage.loadItemHashtags();
+            var itemHashtags = HashtagService.loadAllItemHashtags();
 
             var groupedItems = new Dictionary<string, List<(string id, object item)>>()
             {
@@ -133,10 +134,8 @@ namespace HashtagPlugin.Forms
         {
             try
             {
-                this.WindowState = FormWindowState.Minimized;
                 var item = Globals.ThisAddIn.Application.Session.GetItemFromID(entryID);
                 item?.Display();
-                this.WindowState = FormWindowState.Normal;
             }
             catch (Exception ex)
             {

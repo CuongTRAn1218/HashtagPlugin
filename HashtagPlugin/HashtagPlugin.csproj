@@ -255,7 +255,8 @@
     <Compile Include="Forms\ViewHashtagsForm.Designer.cs">
       <DependentUpon>ViewHashtagsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="HashtagStorage.cs" />
+    <Compile Include="Service\HashtagService.cs" />
+    <Compile Include="Storage\HashtagStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -326,6 +327,7 @@
     </Compile>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

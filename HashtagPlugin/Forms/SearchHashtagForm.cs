@@ -8,12 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Outlook;
-
+using HashtagPlugin.Service;
 namespace HashtagPlugin.Forms
 {
     public partial class SearchHashtagForm : Form
     {
-        private readonly List<string> hashtags = HashtagStorage.loadHashtags();
+        private readonly List<string> hashtags = HashtagService.loadHashtags();
         private ListBox suggestBox;
 
         public SearchHashtagForm()

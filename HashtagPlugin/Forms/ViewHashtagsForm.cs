@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static HashtagPlugin.Forms.RemoveHashtagPromptForm;
 using Outlook = Microsoft.Office.Interop.Outlook;
-
+using HashtagPlugin.Service;
 namespace HashtagPlugin.Forms
 {
     
@@ -34,8 +34,8 @@ namespace HashtagPlugin.Forms
 
         private void loadHashtagsData()
         {
-            var hashtags = HashtagStorage.loadHashtags();
-            var itemHashtags = HashtagStorage.loadItemHashtags();
+            var hashtags = HashtagService.loadHashtags();
+            var itemHashtags = HashtagService.loadAllItemHashtags();
             var hashtagUsage = new Dictionary<string, (int count, Dictionary<string, int> itemCounts)>();
 
             foreach (var item in itemHashtags)
@@ -113,7 +113,7 @@ namespace HashtagPlugin.Forms
                 {
                     hashtag = "#" + hashtag;
                 }
-                if (HashtagStorage.addHashtag(hashtag))
+                if (HashtagService.addHashtag(hashtag))
                 {
                     MessageBox.Show("Hashtag added successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     loadHashtagsData();
@@ -149,13 +149,13 @@ namespace HashtagPlugin.Forms
                         var choice = prompt.UserChoice;
                         if(choice == RemoveHashtagChoice.Cancel)
                         {
-                            HashtagStorage.removeHashtag(selectedHashtag);
-                            var itemHashtags = HashtagStorage.loadItemHashtags();
+                            HashtagService.removeHashtag(selectedHashtag);
+                            var itemHashtags = HashtagService.loadAllItemHashtags();
                             foreach (var item in itemHashtags)
                             {
                                 if (item.Value.Contains(selectedHashtag))
                                 {
-                                    HashtagStorage.removeItemHashtag(item.Key, selectedHashtag);
+                                    HashtagService.removeItemHashtag(item.Key, selectedHashtag);
                                 }
                                 object itemObj = outlookApp.Session.GetItemFromID(item.Key);
                                 if (itemObj is Outlook.MailItem mail)
@@ -194,7 +194,7 @@ namespace HashtagPlugin.Forms
                     if (MessageBox.Show("This hashtag is not used. Are you sure you want to remove it?",
                                         "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
-                        HashtagStorage.removeHashtag(selectedHashtag);
+                        HashtagService.removeHashtag(selectedHashtag);
                         MessageBox.Show($"Removed '{selectedHashtag}' successfully.");
                     }
                 }
@@ -238,7 +238,10 @@ namespace HashtagPlugin.Forms
                 if (!string.IsNullOrEmpty(selectedHashtag))
                 {
                     var form = new UsedHashtagsForm(selectedHashtag);
+                    this.Hide();
+                    form.FormClosed += (s, args) => this.Show();
                     form.Show();
+
                 }
             }
         }

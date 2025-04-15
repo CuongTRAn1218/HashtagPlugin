@@ -6,80 +6,49 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Outlook;
 using Outlook = Microsoft.Office.Interop.Outlook;
-
+using HashtagPlugin.Service;
 namespace HashtagPlugin.Forms
 {
     public partial class EditHashtagForm : Form
     {
-        private Outlook.MailItem mailItem;
-        private Outlook.AppointmentItem appointmentItem;
-        private Outlook.ContactItem contactItem;
+        private object outlookItem;
         private string originalContent;
 
-        public EditHashtagForm(Outlook.MailItem mailItem)
+        public EditHashtagForm(object item)
         {
             InitializeComponent();
-            this.mailItem = mailItem;
-            this.originalContent = mailItem.Body;
-            loadHashtags(mailItem.EntryID);
+            this.outlookItem = item;
+
+            if (item is Outlook.MailItem mail)
+            {
+                this.originalContent = mail.Body;
+                loadHashtags(mail.EntryID);
+            }
+            else if (item is Outlook.AppointmentItem appointment)
+            {
+                this.originalContent = appointment.Body;
+                loadHashtags(appointment.EntryID);
+            }
+            else if (item is Outlook.ContactItem contact)
+            {
+                this.originalContent = contact.Body;
+                loadHashtags(contact.EntryID);
+            }
+            else
+            {
+                throw new ArgumentException("Unsupported Outlook item type.");
+            }
         }
 
-        public EditHashtagForm(Outlook.AppointmentItem appointmentItem)
-        {
-            InitializeComponent();
-            this.appointmentItem = appointmentItem;
-            this.originalContent = appointmentItem.Body;
-            loadHashtags(appointmentItem.EntryID);
-        }
-
-        public EditHashtagForm(Outlook.ContactItem contactItem)
-        {
-            InitializeComponent();
-            this.contactItem = contactItem;
-            this.originalContent = contactItem.Body;
-            loadHashtags(contactItem.EntryID);
-        }
-
-        //private void loadHashtags(string content)
-        //{
-        //    List<string> hashtags = extractHashtags(content);
-        //    foreach (string hashtag in hashtags)
-        //    {
-        //        var tagButton = createHashtag(hashtag);
-        //        flpHashtags.Controls.Add(tagButton);
-        //    }
-        //}
         private void loadHashtags(string itemId)
         {
-            var itemHashtags = HashtagStorage.loadItemHashtags();
-            if (itemHashtags.ContainsKey(itemId))
-            {
-                List<string> hashtags = itemHashtags[itemId];
-                foreach (string hashtag in hashtags)
+            List<string> hashtags = HashtagService.loadItemHashtags(itemId);
+            foreach (string hashtag in hashtags)
                 {
                     var tagButton = createHashtag(hashtag);
                     flpHashtags.Controls.Add(tagButton);
                 }
-            }
         }
-
-        private List<string> extractHashtags(string content)
-        {
-            int delimiterIndex = content.IndexOf("-----");
-            string searchArea = delimiterIndex != -1
-                ? content.Substring(delimiterIndex + "-----".Length)
-                : content;
-
-            Regex regex = new Regex(@"#\w[\w\-]*");
-            MatchCollection matches = regex.Matches(content);
-            List<string> hashtags = new List<string>();
-            foreach (Match match in matches)
-            {
-                hashtags.Add(match.Value);
-            }
-            return hashtags;
-        }
-
         private Button createHashtag(string tag)
         {
             var tagButton = new Button();
@@ -104,58 +73,15 @@ namespace HashtagPlugin.Forms
 
             if (MessageBox.Show($"Are you sure you want to remove the tag {tag}?", "Confirm Removal", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                if (mailItem != null)
-                {
-                    this.mailItem.Body = RemoveTagFromBody(this.mailItem.Body, tag);
-                    itemId = mailItem.EntryID;
-                }
-                   
-                else if (appointmentItem != null)
-                {
-                    this.appointmentItem.Body = RemoveTagFromBody(this.appointmentItem.Body, tag);
-                    itemId = appointmentItem.EntryID;
-                }
-                   
-                else if (contactItem != null)
-                {
-                    this.contactItem.Body = RemoveTagFromBody(this.contactItem.Body, tag);
-                    itemId = contactItem.EntryID;
-                }
-
-                HashtagStorage.removeItemHashtag(itemId, tag);
+                HashtagService.removeItemHashtag(outlookItem, tag);
                 flpHashtags.Controls.Remove(button);
+
             }
-        }
-
-        private string RemoveTagFromBody(string body, string tagToRemove)
-        {
-            const string delimiter = "-----";
-            int delimiterIndex = body.IndexOf(delimiter);
-
-            if (delimiterIndex != -1)
-            {
-                string before = body.Substring(0, delimiterIndex + delimiter.Length);
-                string after = body.Substring(delimiterIndex + delimiter.Length).Trim();
-
-                var tags = after.Split(' ').Where(t => !t.Equals(tagToRemove, StringComparison.OrdinalIgnoreCase)).ToList();
-                string newAfter = string.Join(" ", tags);
-
-                return before + Environment.NewLine + newAfter;
-            }
-            return body;
         }
 
         private void ReloadForm()
         {
-            Form freshForm = null;
-
-            if (mailItem != null)
-                freshForm = new EditHashtagForm(mailItem);
-            else if (appointmentItem != null)
-                freshForm = new EditHashtagForm(appointmentItem);
-            else if (contactItem != null)
-                freshForm = new EditHashtagForm(contactItem);
-
+            Form freshForm = new EditHashtagForm(outlookItem);
             this.Hide();
             freshForm.StartPosition = FormStartPosition.Manual;
             freshForm.Location = this.Location;
@@ -165,7 +91,7 @@ namespace HashtagPlugin.Forms
 
         private void btnAddHashtag_Click(object sender, EventArgs e)
         {
-            this.originalContent = this.mailItem?.Body ?? this.appointmentItem?.Body ?? this.contactItem?.Body;
+            originalContent = HashtagService.getItemBody(outlookItem);
             var form = new AddHashtagForm();
             form.ShowDialog();
             ReloadForm();
@@ -173,15 +99,9 @@ namespace HashtagPlugin.Forms
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show($"Save changes?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Save changes?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                if (mailItem != null)
-                    this.mailItem.Save();
-                else if (appointmentItem != null)
-                    this.appointmentItem.Save();
-                else if (contactItem != null)
-                    this.contactItem.Save();
-
+                HashtagService.saveItem(outlookItem);
                 ReloadForm();
             }
         }
@@ -190,21 +110,12 @@ namespace HashtagPlugin.Forms
         {
             if (MessageBox.Show($"Cancel changes made?", "Cancel changes", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                if (mailItem != null)
-                    this.mailItem.Body = originalContent;
-                else if (appointmentItem != null)
-                    this.appointmentItem.Body = originalContent;
-                else if (contactItem != null)
-                    this.contactItem.Body = originalContent;
-
-                if (mailItem != null)
-                    this.mailItem.Save();
-                else if (appointmentItem != null)
-                    this.appointmentItem.Save();
-                else if (contactItem != null)
-                    this.contactItem.Save();
-
-                ReloadForm();
+                if (MessageBox.Show("Cancel changes made?", "Cancel changes", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    HashtagService.setItemBody(outlookItem, originalContent);
+                    HashtagService.saveItem(outlookItem);
+                    ReloadForm();
+                }
             }
         }
 

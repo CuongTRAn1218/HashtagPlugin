@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using HashtagPlugin.Service;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Outlook = Microsoft.Office.Interop.Outlook;
 
@@ -45,7 +46,7 @@ namespace HashtagPlugin.Forms
         }
         private void loadExistingHashtags()
         {
-            List<string> hashtags = HashtagStorage.loadHashtags();
+            List<string> hashtags = HashtagService.loadHashtags();
             cbHashtags.Items.Clear();
             cbHashtags.Items.AddRange(hashtags.ToArray());
 
@@ -61,7 +62,12 @@ namespace HashtagPlugin.Forms
                 if (!hashtag.StartsWith("#"))
                 {
                     hashtag = "#"+hashtag;
-                   
+                    if(HashtagService.checkHashtag(hashtag))
+                    {
+                        MessageBox.Show("Hashtag already exists", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
                 }
             }
             else if(rbChooseHashtag.Checked) { 
@@ -78,64 +84,10 @@ namespace HashtagPlugin.Forms
             if (explorer.Selection.Count > 0)
             {
                 object item = explorer.Selection[1];
-                string itemId = null;
-                if (item is Outlook.MailItem mail)
-                {
-                    mail.Body = AppendHashtag(mail.Body, hashtag);
-                    mail.Save();
-                    itemId = mail.EntryID;
-                }
-                else if (item is Outlook.AppointmentItem appointment)
-                {
-                    appointment.Body = AppendHashtag(appointment.Body, hashtag);
-                    appointment.Save();
-                    itemId = appointment.EntryID;
-                }
-                else if (item is Outlook.ContactItem contact)
-                {
-                    contact.Body = AppendHashtag(contact.Body, hashtag);
-                    contact.Save();
-                    itemId = contact.EntryID;
-                }
-                HashtagStorage.addHashtag(hashtag);
-                HashtagStorage.addItemHashtag(itemId, hashtag);
+                HashtagService.addItemHashtag(item, hashtag);
                 MessageBox.Show("Added hashtag: " + hashtag);
                 this.Close();
             }
-        }
-        private string AppendHashtag(string body, string newTag)
-        {
-            const string tagSeparator = "-----";
-            var lines = body.TrimEnd().Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).ToList();
-
-            int tagLineIndex = lines.FindLastIndex(line => line.StartsWith(tagSeparator));
-            List<string> tags;
-
-            if (tagLineIndex >= 0 && tagLineIndex < lines.Count - 1)
-            {
-                string tagsLine = lines[tagLineIndex + 1];
-                tags = tagsLine.Split(' ')
-                              .Where(t => !string.IsNullOrWhiteSpace(t))
-                              .ToList();
-
-                if (!tags.Contains(newTag))
-                {
-                    tags.Add(newTag);
-                    lines[tagLineIndex + 1] = string.Join(" ", tags);
-                }
-            }
-
-            else if (tagLineIndex < 0)
-            {
-                lines.Add(tagSeparator);
-                lines.Add(newTag);
-            }
-            else
-            {
-                lines.Add(newTag);
-            }
-
-            return string.Join("\r\n", lines);
         }
 
 
