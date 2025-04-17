@@ -28,26 +28,26 @@ namespace HashtagPlugin.Storage
         public static void saveHashtags(List<string> hashtags)
         {
             Directory.CreateDirectory(path);
-            string json = JsonSerializer.Serialize(hashtags);
+            string json = JsonSerializer.Serialize(hashtags, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(hashtagsFile, json);
         }
 
 
         // item hashtags
-        public static Dictionary<string, List<string>> loadAllItemHashtags()
+        public static Dictionary<string, ItemInfo> loadAllItemHashtags()
         {
             if (File.Exists(itemHashtagsFile) && new FileInfo(itemHashtagsFile).Length > 0)
             {
                 string json = File.ReadAllText(itemHashtagsFile);
-                Dictionary<string, List<string>> itemHashtags = JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json);
+                Dictionary<string, ItemInfo> itemHashtags = JsonSerializer.Deserialize<Dictionary<string,ItemInfo>>(json);
                 return itemHashtags;
             }
-            return new Dictionary<string, List<string>>();
+            return new Dictionary<string, ItemInfo>();
         }
-        public static void saveItemHashtags(Dictionary<string, List<string>> itemHashtags)
+        public static void saveItemHashtags(Dictionary<string, ItemInfo> itemHashtags)
         {
             Directory.CreateDirectory(path);
-            string json = JsonSerializer.Serialize(itemHashtags);
+            string json = JsonSerializer.Serialize(itemHashtags, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(itemHashtagsFile, json);
         }
 

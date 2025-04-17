@@ -15,7 +15,7 @@ namespace HashtagPlugin.Service
         {
             return HashtagStorage.loadHashtags();
         }
-        public static Dictionary<string, List<string>> loadAllItemHashtags()
+        public static Dictionary<string, ItemInfo> loadAllItemHashtags()
         {
             return HashtagStorage.loadAllItemHashtags();
         }
@@ -40,26 +40,26 @@ namespace HashtagPlugin.Service
                 }
             }
         }
-        public static void addItemHashtag(string itemId, string hashtag)
+        public static void addItemHashtag(string itemId, string type,string hashtag)
         {
-            Dictionary<string, List<string>> itemHashtags = HashtagStorage.loadAllItemHashtags();
+            Dictionary<string, ItemInfo> itemHashtags = HashtagStorage.loadAllItemHashtags();
             if (!itemHashtags.ContainsKey(itemId))
             {
-                itemHashtags[itemId] = new List<string>();
+                itemHashtags[itemId] = new ItemInfo { Type = type, Hashtags = new List<string>() };
             }
-            if (!itemHashtags[itemId].Contains(hashtag))
+            if (!itemHashtags[itemId].Hashtags.Contains(hashtag))
             {
-                itemHashtags[itemId].Add(hashtag);
+                itemHashtags[itemId].Hashtags.Add(hashtag);
                 HashtagStorage.saveItemHashtags(itemHashtags);
             }
         }
         public static void removeItemHashtag(string itemId, string hashtag)
         {
-            Dictionary<string, List<string>> itemHashtags = HashtagStorage.loadAllItemHashtags();
-            if (itemHashtags.ContainsKey(itemId))
+            Dictionary<string, ItemInfo> itemHashtags = HashtagStorage.loadAllItemHashtags();
+            if (itemHashtags.TryGetValue(itemId, out var tagInfo))
             {
-                itemHashtags[itemId].Remove(hashtag);
-                if (itemHashtags[itemId].Count == 0)
+                tagInfo.Hashtags.Remove(hashtag);
+                if (tagInfo.Hashtags.Count == 0)
                 {
                     itemHashtags.Remove(itemId);
                 }
@@ -69,12 +69,7 @@ namespace HashtagPlugin.Service
         public static List<string> loadItemHashtags(string itemId)
         {
             var itemHashtags = HashtagStorage.loadAllItemHashtags();
-            if (itemHashtags.ContainsKey(itemId))
-            {
-                List<string> hashtags = itemHashtags[itemId];
-                return hashtags;
-            }
-            return new List<string>(); ;
+            return itemHashtags.TryGetValue(itemId, out var info) ? info.Hashtags : new List<string>();
         }   
         public static bool checkHashtag(string hashtag)
         {
@@ -144,30 +139,46 @@ namespace HashtagPlugin.Service
                     throw new ArgumentException("Unsupported Outlook item type.");
             }
         }
+
+
+
+
+        // Lazy-load inverted index
+        
+
+
         //Add Hashtag
         public static void addItemHashtag(object item, string hashtag)
         {
+            string type = null;
             string itemId = null;
-            if (item is Outlook.MailItem mail)
+
+            switch (item)
             {
-                mail.Body = appendHashtag(mail.Body, hashtag);
-                mail.Save();
-                itemId = mail.EntryID;
+                case Outlook.MailItem mail:
+                    mail.Body = appendHashtag(mail.Body, hashtag);
+                    mail.Save();
+                    type = "Mail";
+                    itemId = mail.EntryID;
+                    break;
+                case Outlook.AppointmentItem appt:
+                    appt.Body = appendHashtag(appt.Body, hashtag);
+                    appt.Save();
+                    type = "Appointment";
+                    itemId = appt.EntryID;
+                    break;
+                case Outlook.ContactItem contact:
+                    contact.Body = appendHashtag(contact.Body, hashtag);
+                    contact.Save();
+                    type = "Contact";
+                    itemId = contact.EntryID;
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported item type.");
             }
-            else if (item is Outlook.AppointmentItem appointment)
-            {
-                appointment.Body = appendHashtag(appointment.Body, hashtag);
-                appointment.Save();
-                itemId = appointment.EntryID;
-            }
-            else if (item is Outlook.ContactItem contact)
-            {
-                contact.Body = appendHashtag(contact.Body, hashtag);
-                contact.Save();
-                itemId = contact.EntryID;
-            }
+
             addHashtag(hashtag);
-            addItemHashtag(itemId, hashtag);
+            addItemHashtag(itemId, type, hashtag);
         }
         private static string appendHashtag(string body, string newTag)
         {
@@ -208,25 +219,27 @@ namespace HashtagPlugin.Service
         public static void removeItemHashtag(object item, string hashtag)
         {
             string itemId = null;
-            if (item is Outlook.MailItem mail)
+            switch (item)
             {
-                mail.Body = removeTagFromBody(mail.Body, hashtag);
-                mail.Save();
-                itemId = mail.EntryID;
+                case Outlook.MailItem mail:
+                    mail.Body = removeTagFromBody(mail.Body, hashtag);
+                    mail.Save();
+                    itemId = mail.EntryID;
+                    break;
+                case Outlook.AppointmentItem appt:
+                    appt.Body = removeTagFromBody(appt.Body, hashtag);
+                    appt.Save();
+                    itemId = appt.EntryID;
+                    break;
+                case Outlook.ContactItem contact:
+                    contact.Body = removeTagFromBody(contact.Body, hashtag);
+                    contact.Save();
+                    itemId = contact.EntryID;
+                    break;
+                default:
+                    throw new ArgumentException("Unsupported item type.");
             }
-            else if (item is Outlook.AppointmentItem appointment)
-            {
-                appointment.Body = removeTagFromBody(appointment.Body, hashtag);
-                appointment.Save();
-                itemId = appointment.EntryID;
-            }
-            else if (item is Outlook.ContactItem contact)
-            {
-                contact.Body = removeTagFromBody(contact.Body, hashtag);
-                contact.Save();
-                itemId = contact.EntryID;
-            }
-            removeHashtag(hashtag);
+
             removeItemHashtag(itemId, hashtag);
         }
         private static string removeTagFromBody(string body, string tagToRemove)
@@ -245,6 +258,24 @@ namespace HashtagPlugin.Service
                 return before + Environment.NewLine + newAfter;
             }
             return body;
+        }
+        //Search Hashtags
+        public static List<string> SearchItemsByTags(IEnumerable<string> tags)
+        {
+            Dictionary<string, ItemInfo> itemHashtags = HashtagStorage.loadAllItemHashtags();
+            List<string> result = new List<string>();
+
+            foreach (var kvp in itemHashtags)
+            {
+                var itemHashtagsList = kvp.Value.Hashtags;
+
+                if (tags.All(tag => itemHashtagsList.Contains(tag)))
+                {
+                    result.Add(kvp.Key);
+                }
+            }
+            return result;
+
         }
 
     }

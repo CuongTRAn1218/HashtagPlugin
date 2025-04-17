@@ -8,7 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Office.Interop.Outlook;
+using Outlook = Microsoft.Office.Interop.Outlook;
 using HashtagPlugin.Service;
+using Exception = System.Exception;
 namespace HashtagPlugin.Forms
 {
     public partial class SearchHashtagForm : Form
@@ -120,6 +122,78 @@ namespace HashtagPlugin.Forms
         private void SearchHashtagForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            var outlookApp = Globals.ThisAddIn.Application;
+            List<string> tags = GetCurrentTags();
+            List<string> entryIds = HashtagService.SearchItemsByTags(tags);
+            Dictionary<string, ItemInfo> search = HashtagService.loadAllItemHashtags(); 
+            dgvResult.Rows.Clear();
+            foreach (string entryId in entryIds)
+            {
+                string type = string.Empty;
+                string subject = string.Empty;
+
+                try
+                {
+                    object item = outlookApp.Session.GetItemFromID(entryId);
+
+                    if (search.ContainsKey(entryId))
+                    {
+                        var itemInfo = search[entryId];
+                        type = itemInfo.Type;
+
+                        if (item is Outlook.MailItem mail)
+                        {
+                            subject = $"{mail.Subject} From: {mail.SenderName} Received: {mail.ReceivedTime:g}";
+                        }
+                        else if (item is Outlook.ContactItem contact)
+                        {
+                            subject = $"{contact.FullName} Email: {contact.Email1Address}";
+                        }
+                        else if (item is Outlook.AppointmentItem appt)
+                        {
+                            subject = $"{appt.Subject} Start: {appt.Start:g} Location: {appt.Location}";
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    subject = $"Error loading item: {ex.Message}";
+                }
+     
+                var rowIndex = dgvResult.Rows.Add(type, subject);
+                dgvResult.Rows[rowIndex].Tag = entryId;
+            }
+        }
+
+        private void dgvResult_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                
+                string type = dgvResult.Rows[e.RowIndex].Cells[0].Value.ToString();
+                string subject = dgvResult.Rows[e.RowIndex].Cells[1].Value.ToString();
+                string entryId = dgvResult.Rows[e.RowIndex].Tag.ToString();
+
+                OpenOutlookItemAsync(entryId);
+            }
+        }
+        private async Task OpenOutlookItemAsync(string entryId)
+        {
+            try
+            {
+                var outlookApp = Globals.ThisAddIn.Application;
+                var item = outlookApp.Session.GetItemFromID(entryId);
+                
+                item?.Display(); 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to open item: " + ex.Message);
+            }
         }
     }
 }

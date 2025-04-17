@@ -29,13 +29,13 @@ namespace HashtagPlugin
         private void btnViewHashtags_Click(object sender, RibbonControlEventArgs e)
         {
             var form = new ViewHashtagsForm();
-            form.ShowDialog();
+            form.Show();
         }
 
         private void btnSearch_Click(object sender, RibbonControlEventArgs e)
         {
             var form = new SearchHashtagForm();
-            form.ShowDialog();
+            form.Show();
         }
     }
 }

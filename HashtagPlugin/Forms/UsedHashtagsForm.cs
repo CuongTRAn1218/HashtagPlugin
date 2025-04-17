@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using HashtagPlugin.Service;
+
 namespace HashtagPlugin.Forms
 {
     public partial class UsedHashtagsForm : Form
     {
         private string selectedHashtag;
+
         public UsedHashtagsForm(string selectedhashtag)
         {
             InitializeComponent();
@@ -33,9 +31,13 @@ namespace HashtagPlugin.Forms
                 { "Contact", new List<(string, object)>() }
             };
 
-            foreach (var itemId in itemHashtags.Keys)
+            foreach (var kvp in itemHashtags)
             {
-                if (!itemHashtags[itemId].Contains(selectedHashtag)) continue;
+                string itemId = kvp.Key;
+                var info = kvp.Value;
+
+                if (info.Hashtags == null || !info.Hashtags.Contains(selectedHashtag))
+                    continue;
 
                 try
                 {
@@ -58,7 +60,7 @@ namespace HashtagPlugin.Forms
                 }
             }
 
-            // Display groups
+            // Display grouped items
             foreach (var group in groupedItems)
             {
                 if (group.Value.Count == 0) continue;
@@ -80,16 +82,18 @@ namespace HashtagPlugin.Forms
                 }
             }
         }
+
         private Control CreateItemPanel(object item, string entryID)
         {
             Panel panel = new Panel
             {
-                Width = 400,
+                Width = flpItems.Width-2,
                 Height = 80,
                 BorderStyle = BorderStyle.FixedSingle,
                 Tag = entryID,
                 Margin = new Padding(5),
                 Cursor = Cursors.Hand
+                
             };
 
             Label lbl = new Label
@@ -103,15 +107,15 @@ namespace HashtagPlugin.Forms
 
             if (item is Outlook.MailItem mail)
             {
-                displayText = $"\u2709 {mail.Subject}\nFrom: {mail.SenderName}\nReceived: {mail.ReceivedTime}";
+                displayText = $"\u2709 {mail.Subject}\nFrom: {mail.SenderName}\nReceived: {mail.ReceivedTime:g}";
             }
             else if (item is Outlook.AppointmentItem appt)
             {
-                displayText = $"\u1F4C {appt.Subject}\nStart: {appt.Start:g}\nLocation: {appt.Location}";
+                displayText = $"\U0001F4C5 {appt.Subject}\nStart: {appt.Start:g}\nLocation: {appt.Location}";
             }
             else if (item is Outlook.ContactItem contact)
             {
-                displayText = $"\u1F4D {contact.FullName}\nEmail: {contact.Email1Address}\nCompany: {contact.CompanyName}";
+                displayText = $"\U0001F464 {contact.FullName}\nEmail: {contact.Email1Address}";
             }
             else
             {
@@ -121,11 +125,10 @@ namespace HashtagPlugin.Forms
             lbl.Text = displayText;
             panel.Controls.Add(lbl);
 
+            // Attach click handler
             panel.Click += (s, e) => OpenOutlookItem(entryID);
             foreach (Control ctl in panel.Controls)
-            {
                 ctl.Click += (s, e) => OpenOutlookItem(entryID);
-            }
 
             return panel;
         }
@@ -142,6 +145,5 @@ namespace HashtagPlugin.Forms
                 MessageBox.Show("Unable to open item: " + ex.Message);
             }
         }
-
     }
 }

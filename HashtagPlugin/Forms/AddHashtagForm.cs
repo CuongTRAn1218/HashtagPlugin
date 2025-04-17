@@ -86,7 +86,7 @@ namespace HashtagPlugin.Forms
                 object item = explorer.Selection[1];
                 HashtagService.addItemHashtag(item, hashtag);
                 MessageBox.Show("Added hashtag: " + hashtag);
-                this.Close();
+                
             }
         }
 

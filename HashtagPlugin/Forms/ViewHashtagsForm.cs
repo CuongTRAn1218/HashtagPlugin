@@ -35,13 +35,15 @@ namespace HashtagPlugin.Forms
         private void loadHashtagsData()
         {
             var hashtags = HashtagService.loadHashtags();
-            var itemHashtags = HashtagService.loadAllItemHashtags();
+            Dictionary<string,ItemInfo> itemHashtags = HashtagService.loadAllItemHashtags();
             var hashtagUsage = new Dictionary<string, (int count, Dictionary<string, int> itemCounts)>();
 
             foreach (var item in itemHashtags)
             {
-                string itemType = getItemType(item.Key);
-                foreach (var hashtag in item.Value)
+                string itemId = item.Key;
+                string itemType = item.Value.Type;
+
+                foreach (var hashtag in item.Value.Hashtags)
                 {
                     if (!hashtagUsage.ContainsKey(hashtag))
                     {
@@ -56,8 +58,8 @@ namespace HashtagPlugin.Forms
                     {
                         hashtagUsage[hashtag].itemCounts[itemType] = 1;
                     }
-
                 }
+
             }
             foreach (var hashtag in hashtags)
             {
@@ -78,26 +80,7 @@ namespace HashtagPlugin.Forms
             }
 
         }
-        private string getItemType(string itemId)
-        {
-          object item = outlookApp.Session.GetItemFromID(itemId);
-            if (item is Outlook.MailItem)
-            {
-                return "Email";
-            }
-            else if (item is Outlook.AppointmentItem)
-            {
-                return "Appointment";
-            }
-            else if (item is Outlook.ContactItem)
-            {
-                return "Contact";
-            }
-            else
-            {
-                return "Unknown";
-            }
-        }
+
         private void ViewHashtagsForm_Load(object sender, EventArgs e)
         {
             loadHashtagsData();
@@ -130,6 +113,7 @@ namespace HashtagPlugin.Forms
             }
         }
 
+
         private void btnRemoveHashtag_Click(object sender, EventArgs e)
         {
             if (dgvHashtags.SelectedRows.Count > 0)
@@ -153,26 +137,26 @@ namespace HashtagPlugin.Forms
                             var itemHashtags = HashtagService.loadAllItemHashtags();
                             foreach (var item in itemHashtags)
                             {
-                                if (item.Value.Contains(selectedHashtag))
-                                {
-                                    HashtagService.removeItemHashtag(item.Key, selectedHashtag);
-                                }
-                                object itemObj = outlookApp.Session.GetItemFromID(item.Key);
-                                if (itemObj is Outlook.MailItem mail)
-                                {
-                                    mail.Body = RemoveTagFromBody(mail.Body, selectedHashtag);
-                                    mail.Save();
-                                }
-                                else if (itemObj is Outlook.AppointmentItem appointment)
-                                {
-                                    appointment.Body = RemoveTagFromBody(appointment.Body, selectedHashtag);
-                                    appointment.Save();
-                                }
-                                else if (itemObj is Outlook.ContactItem contact)
-                                {
-                                    contact.Body = RemoveTagFromBody(contact.Body, selectedHashtag);
-                                    contact.Save();
-                                }
+                                //if (item.Value.Contains(selectedHashtag))
+                                //{
+                                //    HashtagService.removeItemHashtag(item.Key, selectedHashtag);
+                                //}
+                                //object itemObj = outlookApp.Session.GetItemFromID(item.Key);
+                                //if (itemObj is Outlook.MailItem mail)
+                                //{
+                                //    mail.Body = RemoveTagFromBody(mail.Body, selectedHashtag);
+                                //    mail.Save();
+                                //}
+                                //else if (itemObj is Outlook.AppointmentItem appointment)
+                                //{
+                                //    appointment.Body = RemoveTagFromBody(appointment.Body, selectedHashtag);
+                                //    appointment.Save();
+                                //}
+                                //else if (itemObj is Outlook.ContactItem contact)
+                                //{
+                                //    contact.Body = RemoveTagFromBody(contact.Body, selectedHashtag);
+                                //    contact.Save();
+                                //}
                             }
 
 

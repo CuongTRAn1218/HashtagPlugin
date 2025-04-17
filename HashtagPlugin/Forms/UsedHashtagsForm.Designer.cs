@@ -38,7 +38,7 @@
             this.flpItems.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flpItems.Location = new System.Drawing.Point(0, 0);
             this.flpItems.Name = "flpItems";
-            this.flpItems.Size = new System.Drawing.Size(428, 637);
+            this.flpItems.Size = new System.Drawing.Size(650, 637);
             this.flpItems.TabIndex = 0;
             // 
             // UsedHashtagsForm
@@ -46,7 +46,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(428, 637);
+            this.ClientSize = new System.Drawing.Size(650, 637);
             this.Controls.Add(this.flpItems);
             this.Name = "UsedHashtagsForm";
             this.Text = "Items with hashtag";

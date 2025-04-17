@@ -255,6 +255,7 @@
     <Compile Include="Forms\ViewHashtagsForm.Designer.cs">
       <DependentUpon>ViewHashtagsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ItemInfo.cs" />
     <Compile Include="Service\HashtagService.cs" />
     <Compile Include="Storage\HashtagStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
