@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Office.Interop.Outlook;
 using HashtagPlugin.Storage;
 using Outlook = Microsoft.Office.Interop.Outlook;
+using System.Net.Http;
+using System.Text.Json;
 namespace HashtagPlugin.Service
 {
     public static class HashtagService
@@ -143,9 +145,6 @@ namespace HashtagPlugin.Service
 
 
 
-        // Lazy-load inverted index
-        
-
 
         //Add Hashtag
         public static void addItemHashtag(object item, string hashtag)
@@ -278,5 +277,41 @@ namespace HashtagPlugin.Service
 
         }
 
+        //Generate Hashtag
+        public static List<string> ExtractHashtags(string text, List<string> alreadyAdded)
+        {
+            var words = text.Split(new[] { ' ', '\n', '\r', ',', '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+            var hashtags = new HashSet<string>();
+
+            foreach (var word in words)
+            {
+                if (word.StartsWith("#") && word.Length > 1 && word.Skip(1).All(char.IsLetterOrDigit)&& !alreadyAdded.Contains(word))
+                {
+                    hashtags.Add(word);
+                }
+            }
+
+            return hashtags.ToList();
+        }
+
+        public static async Task<List<string>> GenerateHashtagsFromOllamac(string content, List<string> alreadyAdded)
+        {
+            string existingHashtags = string.Join(",",loadHashtags());
+
+            var httpClient = new HttpClient();
+            var requestData = new
+            {
+                model = "gemma3",
+                prompt = $"\"Generate under 10 hashtags also check and take any relevant hashtag in this{existingHashtags} for:{content} \nonly use lowercase letters. only output the hashtags comma-seprated.\"",
+                stream = false
+            };
+
+            var json = JsonSerializer.Serialize(requestData);
+            var contentw = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync("http://localhost:11434/api/generate", contentw);
+            var responseText = await response.Content.ReadAsStringAsync();
+            return ExtractHashtags(responseText,alreadyAdded);
+        }
     }
 }

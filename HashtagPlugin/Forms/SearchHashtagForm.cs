@@ -177,18 +177,15 @@ namespace HashtagPlugin.Forms
                 string type = dgvResult.Rows[e.RowIndex].Cells[0].Value.ToString();
                 string subject = dgvResult.Rows[e.RowIndex].Cells[1].Value.ToString();
                 string entryId = dgvResult.Rows[e.RowIndex].Tag.ToString();
-
-                OpenOutlookItemAsync(entryId);
+                OpenOutlookItem(entryId);
             }
         }
-        private async Task OpenOutlookItemAsync(string entryId)
+        private void OpenOutlookItem(string entryId)
         {
             try
             {
-                var outlookApp = Globals.ThisAddIn.Application;
-                var item = outlookApp.Session.GetItemFromID(entryId);
-                
-                item?.Display(); 
+                var item = Globals.ThisAddIn.Application.Session.GetItemFromID(entryId);
+                item?.Display();
             }
             catch (Exception ex)
             {

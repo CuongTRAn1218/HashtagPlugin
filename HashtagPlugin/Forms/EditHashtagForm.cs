@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Microsoft.Office.Interop.Outlook;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using HashtagPlugin.Service;
 namespace HashtagPlugin.Forms

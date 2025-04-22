@@ -29,14 +29,19 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.rbCreateNew = new System.Windows.Forms.RadioButton();
             this.rbChooseHashtag = new System.Windows.Forms.RadioButton();
+            this.rbCreateNew = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
             this.txtNewHashtag = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.cbHashtags = new System.Windows.Forms.ComboBox();
             this.btnAddHashtag = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.flpSuggesttion = new System.Windows.Forms.FlowLayoutPanel();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lblItemHashtag = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -50,6 +55,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Choose method";
             // 
+            // rbChooseHashtag
+            // 
+            this.rbChooseHashtag.AutoSize = true;
+            this.rbChooseHashtag.Location = new System.Drawing.Point(154, 21);
+            this.rbChooseHashtag.Name = "rbChooseHashtag";
+            this.rbChooseHashtag.Size = new System.Drawing.Size(210, 20);
+            this.rbChooseHashtag.TabIndex = 1;
+            this.rbChooseHashtag.TabStop = true;
+            this.rbChooseHashtag.Text = "Choose from existing hashtags";
+            this.rbChooseHashtag.UseVisualStyleBackColor = true;
+            // 
             // rbCreateNew
             // 
             this.rbCreateNew.AutoSize = true;
@@ -61,17 +77,6 @@
             this.rbCreateNew.Text = "Create new";
             this.rbCreateNew.UseVisualStyleBackColor = true;
             this.rbCreateNew.CheckedChanged += new System.EventHandler(this.rbCreateNew_CheckedChanged);
-            // 
-            // rbChooseHashtag
-            // 
-            this.rbChooseHashtag.AutoSize = true;
-            this.rbChooseHashtag.Location = new System.Drawing.Point(154, 21);
-            this.rbChooseHashtag.Name = "rbChooseHashtag";
-            this.rbChooseHashtag.Size = new System.Drawing.Size(210, 20);
-            this.rbChooseHashtag.TabIndex = 1;
-            this.rbChooseHashtag.TabStop = true;
-            this.rbChooseHashtag.Text = "Choose from existing hashtags";
-            this.rbChooseHashtag.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -110,7 +115,7 @@
             // 
             // btnAddHashtag
             // 
-            this.btnAddHashtag.Location = new System.Drawing.Point(165, 187);
+            this.btnAddHashtag.Location = new System.Drawing.Point(151, 325);
             this.btnAddHashtag.Name = "btnAddHashtag";
             this.btnAddHashtag.Size = new System.Drawing.Size(116, 36);
             this.btnAddHashtag.TabIndex = 5;
@@ -118,11 +123,50 @@
             this.btnAddHashtag.UseVisualStyleBackColor = true;
             this.btnAddHashtag.Click += new System.EventHandler(this.btnAddHashtag_Click);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.flpSuggesttion);
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.lblItemHashtag);
+            this.groupBox2.Location = new System.Drawing.Point(433, 13);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(325, 348);
+            this.groupBox2.TabIndex = 6;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Hashtags";
+            // 
+            // flpSuggesttion
+            // 
+            this.flpSuggesttion.Location = new System.Drawing.Point(10, 125);
+            this.flpSuggesttion.Name = "flpSuggesttion";
+            this.flpSuggesttion.Size = new System.Drawing.Size(309, 217);
+            this.flpSuggesttion.TabIndex = 2;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(6, 97);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(101, 18);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Suggestions";
+            // 
+            // lblItemHashtag
+            // 
+            this.lblItemHashtag.AutoSize = true;
+            this.lblItemHashtag.Location = new System.Drawing.Point(7, 24);
+            this.lblItemHashtag.Name = "lblItemHashtag";
+            this.lblItemHashtag.Size = new System.Drawing.Size(172, 16);
+            this.lblItemHashtag.TabIndex = 0;
+            this.lblItemHashtag.Text = "Item hashtags placeholders";
+            // 
             // AddHashtagForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(458, 235);
+            this.ClientSize = new System.Drawing.Size(770, 373);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnAddHashtag);
             this.Controls.Add(this.cbHashtags);
             this.Controls.Add(this.label2);
@@ -133,6 +177,8 @@
             this.Text = "Add Hashtag";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -148,5 +194,9 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox cbHashtags;
         private System.Windows.Forms.Button btnAddHashtag;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Label lblItemHashtag;
+        private System.Windows.Forms.FlowLayoutPanel flpSuggesttion;
+        private System.Windows.Forms.Label label3;
     }
 }

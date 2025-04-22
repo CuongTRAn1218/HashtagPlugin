@@ -133,11 +133,11 @@ namespace HashtagPlugin.Forms
             return panel;
         }
 
-        private void OpenOutlookItem(string entryID)
+        private void OpenOutlookItem(string entryId)
         {
             try
             {
-                var item = Globals.ThisAddIn.Application.Session.GetItemFromID(entryID);
+                var item = Globals.ThisAddIn.Application.Session.GetItemFromID(entryId);
                 item?.Display();
             }
             catch (Exception ex)
