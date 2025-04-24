@@ -222,7 +222,6 @@ namespace HashtagPlugin.Forms
                 if (!string.IsNullOrEmpty(selectedHashtag))
                 {
                     var form = new UsedHashtagsForm(selectedHashtag);
-                    this.Hide();
                     form.FormClosed += (s, args) => this.Show();
                     form.Show();
 
