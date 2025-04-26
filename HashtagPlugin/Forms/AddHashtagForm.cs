@@ -42,6 +42,34 @@ namespace HashtagPlugin.Forms
                     itemSubject = contact.FullName;
                     itemBody = contact.Body;
                 }
+                else if (item is Outlook.TaskItem task)
+                {
+                    this.Text = "Add Hashtag for Task";
+                    entryId = task.EntryID;
+                    itemSubject = task.Subject;
+                    itemBody = task.Body;
+                }
+                else if (item is Outlook.MeetingItem meeting)
+                {
+                    this.Text = "Add Hashtag for Meeting Request";
+                    entryId = meeting.EntryID;
+                    itemSubject = meeting.Subject;
+                    itemBody = meeting.Body;
+                }
+                else if (item is Outlook.NoteItem note)
+                {
+                    this.Text = "Add Hashtag for Note";
+                    entryId = note.EntryID;
+                    itemSubject = note.Subject;
+                    itemBody = note.Body;
+                }
+                else if (item is Outlook.PostItem post)
+                {
+                    this.Text = "Add Hashtag for Post";
+                    entryId = post.EntryID;
+                    itemSubject = post.Subject;
+                    itemBody = post.Body;
+                }
                 this.lblItemHashtag.Text = string.Join(" ",HashtagService.loadItemHashtags(entryId));
                 getSuggestions(itemSubject+"\n"+itemBody);
             }

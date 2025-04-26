@@ -1,13 +1,13 @@
 ﻿namespace HashtagPlugin
 {
-    partial class RibbonMailRead : Microsoft.Office.Tools.Ribbon.RibbonBase
+    partial class RibbonItemRead : Microsoft.Office.Tools.Ribbon.RibbonBase
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        public RibbonMailRead()
+        public RibbonItemRead()
             : base(Globals.Factory.GetRibbonFactory())
         {
             InitializeComponent();
@@ -37,6 +37,7 @@
             this.tab1 = this.Factory.CreateRibbonTab();
             this.group1 = this.Factory.CreateRibbonGroup();
             this.btnEditHashtags = this.Factory.CreateRibbonButton();
+            this.btnAddHashtag = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.group1.SuspendLayout();
             this.SuspendLayout();
@@ -51,6 +52,7 @@
             // group1
             // 
             this.group1.Items.Add(this.btnEditHashtags);
+            this.group1.Items.Add(this.btnAddHashtag);
             this.group1.Label = "Hashtag Tools";
             this.group1.Name = "group1";
             // 
@@ -60,11 +62,18 @@
             this.btnEditHashtags.Name = "btnEditHashtags";
             this.btnEditHashtags.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnEditHashtags_Click);
             // 
-            // RibbonMailRead
+            // btnAddHashtag
             // 
-            this.Name = "RibbonMailRead";
-            this.RibbonType = "Microsoft.Outlook.Appointment, Microsoft.Outlook.Contact, Microsoft.Outlook.Mail." +
-    "Read";
+            this.btnAddHashtag.Label = "Add Hashtag";
+            this.btnAddHashtag.Name = "btnAddHashtag";
+            this.btnAddHashtag.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnAddHashtag_Click);
+            // 
+            // RibbonItemRead
+            // 
+            this.Name = "RibbonItemRead";
+            this.RibbonType = "Microsoft.Outlook.Appointment, Microsoft.Outlook.Contact, Microsoft.Outlook.Journ" +
+    "al, Microsoft.Outlook.Mail.Read, Microsoft.Outlook.Post.Read, Microsoft.Outlook." +
+    "Task";
             this.Tabs.Add(this.tab1);
             this.Load += new Microsoft.Office.Tools.Ribbon.RibbonUIEventHandler(this.RibbonMailRead_Load);
             this.tab1.ResumeLayout(false);
@@ -80,13 +89,14 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonTab tab1;
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup group1;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnEditHashtags;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnAddHashtag;
     }
 
     partial class ThisRibbonCollection
     {
-        internal RibbonMailRead RibbonMailRead
+        internal RibbonItemRead RibbonMailRead
         {
-            get { return this.GetRibbon<RibbonMailRead>(); }
+            get { return this.GetRibbon<RibbonItemRead>(); }
         }
     }
 }

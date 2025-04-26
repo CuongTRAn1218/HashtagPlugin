@@ -8,7 +8,7 @@ using Microsoft.Office.Tools.Ribbon;
 using Outlook = Microsoft.Office.Interop.Outlook;
 namespace HashtagPlugin
 {
-    public partial class RibbonMailRead
+    public partial class RibbonItemRead
     {
         private void RibbonMailRead_Load(object sender, RibbonUIEventArgs e)
         {
@@ -37,12 +37,43 @@ namespace HashtagPlugin
                 {
                     var form = new EditHashtagForm(contactItem);
                     form.ShowDialog();
+                }else if(selectedItem is Outlook.TaskItem taskItem)
+                {
+                    var form = new EditHashtagForm(taskItem);
+                    form.ShowDialog();
+                }
+                else if (selectedItem is Outlook.PostItem postItem)
+                {
+                    var form = new EditHashtagForm(postItem);
+                    form.ShowDialog();
+                }
+                else if (selectedItem is Outlook.NoteItem noteItem)
+                {
+                    var form = new EditHashtagForm(noteItem);
+                    form.ShowDialog();
+                }
+                else if (selectedItem is Outlook.MeetingItem meetingItem)
+                {
+                    var form = new EditHashtagForm(meetingItem);
+                    form.ShowDialog();
                 }
 
                 else
                 {
-                    MessageBox.Show("No item selected. Please select a mail item to edit tags.");
+                    MessageBox.Show("No item selected. Please select an item to edit tags.");
                 }
+            }
+        }
+
+        private void btnAddHashtag_Click(object sender, RibbonControlEventArgs e)
+        {
+            using (var form = new AddHashtagForm())
+            {
+                if (form.showForm)
+                {
+                    form.ShowDialog();
+                }
+
             }
         }
     }

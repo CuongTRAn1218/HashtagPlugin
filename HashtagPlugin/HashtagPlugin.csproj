@@ -292,8 +292,8 @@
     <EmbeddedResource Include="RibbonExplorer.resx">
       <DependentUpon>RibbonExplorer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="RibbonMailRead.resx">
-      <DependentUpon>RibbonMailRead.cs</DependentUpon>
+    <EmbeddedResource Include="RibbonItemRead.resx">
+      <DependentUpon>RibbonItemRead.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="HashtagPlugin_TemporaryKey.pfx" />
@@ -312,11 +312,11 @@
     <Compile Include="RibbonExplorer.Designer.cs">
       <DependentUpon>RibbonExplorer.cs</DependentUpon>
     </Compile>
-    <Compile Include="RibbonMailRead.cs">
+    <Compile Include="RibbonItemRead.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="RibbonMailRead.Designer.cs">
-      <DependentUpon>RibbonMailRead.cs</DependentUpon>
+    <Compile Include="RibbonItemRead.Designer.cs">
+      <DependentUpon>RibbonItemRead.cs</DependentUpon>
     </Compile>
     <Compile Include="ThisAddIn.cs">
       <SubType>Code</SubType>

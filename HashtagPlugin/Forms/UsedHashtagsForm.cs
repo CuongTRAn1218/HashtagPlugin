@@ -17,6 +17,9 @@ namespace HashtagPlugin.Forms
             InitializeComponent();
             this.selectedHashtag = selectedhashtag;
             this.TopMost = true;
+            flpItems.AutoScroll = true;
+            flpItems.WrapContents = false;
+            flpItems.FlowDirection = FlowDirection.TopDown;
         }
 
         private void UsedHashtagsForm_Load(object sender, EventArgs e)
@@ -28,7 +31,12 @@ namespace HashtagPlugin.Forms
             {
                 { "Mail", new List<(string, object)>() },
                 { "Appointment", new List<(string, object)>() },
-                { "Contact", new List<(string, object)>() }
+                { "Contact", new List<(string, object)>() },
+                { "Task", new List<(string, object)>() },
+                { "Post", new List<(string, object)>() },
+                { "Note", new List<(string, object)>() },
+                { "Meeting", new List<(string, object)>() }
+
             };
 
             foreach (var kvp in itemHashtags)
@@ -48,6 +56,14 @@ namespace HashtagPlugin.Forms
                         groupedItems["Appointment"].Add((itemId, item));
                     else if (item is Outlook.ContactItem)
                         groupedItems["Contact"].Add((itemId, item));
+                    else if (item is Outlook.TaskItem)
+                        groupedItems["Task"].Add((itemId, item));
+                    else if (item is Outlook.PostItem)
+                        groupedItems["Post"].Add((itemId, item));
+                    else if (item is Outlook.NoteItem)
+                        groupedItems["Note"].Add((itemId, item));
+                    else if (item is Outlook.MeetingItem)
+                        groupedItems["Meeting"].Add((itemId, item));
                 }
                 catch (Exception ex)
                 {
@@ -116,6 +132,22 @@ namespace HashtagPlugin.Forms
             else if (item is Outlook.ContactItem contact)
             {
                 displayText = $"\U0001F464 {contact.FullName}\nEmail: {contact.Email1Address}";
+            }
+            else if (item is Outlook.TaskItem task)
+            {
+                displayText = $"\U0001F4CB {task.Subject}\nDue: {task.DueDate:g}";
+            }
+            else if (item is Outlook.PostItem post)
+            {
+                displayText = $"\U0001F4AC {post.Subject}\nPosted: {post.CreationTime:g}";
+            }
+            else if (item is Outlook.NoteItem note)
+            {
+                displayText = $"\U0001F4DD {note.Subject}\nCreated: {note.CreationTime:g}";
+            }
+            else if (item is Outlook.MeetingItem meeting)
+            {
+                displayText = $"\U0001F4C6 {meeting.Subject}\n";
             }
             else
             {

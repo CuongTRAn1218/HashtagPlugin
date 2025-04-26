@@ -131,35 +131,10 @@ namespace HashtagPlugin.Forms
                     if (dialogResult == DialogResult.OK)
                     {
                         var choice = prompt.UserChoice;
-                        if(choice == RemoveHashtagChoice.Cancel)
+                        if(choice == RemoveHashtagChoice.Remove)
                         {
+                            HashtagService.removeHashtagFromAllItems(selectedHashtag);
                             HashtagService.removeHashtag(selectedHashtag);
-                            var itemHashtags = HashtagService.loadAllItemHashtags();
-                            foreach (var item in itemHashtags)
-                            {
-                                //if (item.Value.Contains(selectedHashtag))
-                                //{
-                                //    HashtagService.removeItemHashtag(item.Key, selectedHashtag);
-                                //}
-                                //object itemObj = outlookApp.Session.GetItemFromID(item.Key);
-                                //if (itemObj is Outlook.MailItem mail)
-                                //{
-                                //    mail.Body = RemoveTagFromBody(mail.Body, selectedHashtag);
-                                //    mail.Save();
-                                //}
-                                //else if (itemObj is Outlook.AppointmentItem appointment)
-                                //{
-                                //    appointment.Body = RemoveTagFromBody(appointment.Body, selectedHashtag);
-                                //    appointment.Save();
-                                //}
-                                //else if (itemObj is Outlook.ContactItem contact)
-                                //{
-                                //    contact.Body = RemoveTagFromBody(contact.Body, selectedHashtag);
-                                //    contact.Save();
-                                //}
-                            }
-
-
                             MessageBox.Show($"Removed '{selectedHashtag}' successfully.");
                         }else if(choice == RemoveHashtagChoice.ViewItems)
                         {
@@ -176,7 +151,7 @@ namespace HashtagPlugin.Forms
                 else
                 {
                     if (MessageBox.Show("This hashtag is not used. Are you sure you want to remove it?",
-                                        "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                                        "Confirmation", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
                         HashtagService.removeHashtag(selectedHashtag);
                         MessageBox.Show($"Removed '{selectedHashtag}' successfully.");
@@ -188,23 +163,6 @@ namespace HashtagPlugin.Forms
             {
                 MessageBox.Show("Please select a hashtag to remove.");
             }
-        }
-        private string RemoveTagFromBody(string body, string tagToRemove)
-        {
-            const string delimiter = "-----";
-            int delimiterIndex = body.IndexOf(delimiter);
-
-            if (delimiterIndex != -1)
-            {
-                string before = body.Substring(0, delimiterIndex + delimiter.Length);
-                string after = body.Substring(delimiterIndex + delimiter.Length).Trim();
-
-                var tags = after.Split(' ').Where(t => !t.Equals(tagToRemove, StringComparison.OrdinalIgnoreCase)).ToList();
-                string newAfter = string.Join(" ", tags);
-
-                return before + Environment.NewLine + newAfter;
-            }
-            return body;
         }
 
         private void dgvHashtags_SelectionChanged(object sender, EventArgs e)

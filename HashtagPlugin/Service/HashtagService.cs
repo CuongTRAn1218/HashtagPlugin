@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Office.Interop.Outlook;
 using HashtagPlugin.Storage;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Net.Http;
@@ -42,6 +41,72 @@ namespace HashtagPlugin.Service
                 }
             }
         }
+        public static void removeHashtagFromAllItems(string hashtag)
+        {
+            var itemHashtags = loadAllItemHashtags();
+            Outlook.Application outlookApp = new Outlook.Application();
+
+            foreach (var kvp in itemHashtags.ToList())
+            {
+                string entryId = kvp.Key;
+                ItemInfo info = kvp.Value;
+
+                if (info.Hashtags.Contains(hashtag))
+                {
+                    try
+                    {
+                        object itemObj = outlookApp.Session.GetItemFromID(entryId);
+
+                        if (itemObj is Outlook.MailItem mail)
+                        {
+                            mail.Body = removeTagFromBody(mail.Body, hashtag);
+                            mail.Save();
+                        }
+                        else if (itemObj is Outlook.AppointmentItem appointment)
+                        {
+                            appointment.Body = removeTagFromBody(appointment.Body, hashtag);
+                            appointment.Save();
+                        }
+                        else if (itemObj is Outlook.ContactItem contact)
+                        {
+                            contact.Body = removeTagFromBody(contact.Body, hashtag);
+                            contact.Save();
+                        }else if (itemObj is Outlook.TaskItem task)
+                        {
+                            task.Body = removeTagFromBody(task.Body, hashtag);
+                            task.Save();
+                        }
+                        else if (itemObj is Outlook.MeetingItem meeting)
+                        {
+                            meeting.Body = removeTagFromBody(meeting.Body, hashtag);
+                            meeting.Save();
+                        }
+                        else if (itemObj is Outlook.NoteItem note)
+                        {
+                            note.Body = removeTagFromBody(note.Body, hashtag);
+                            note.Save();
+                        }
+                        else if (itemObj is Outlook.PostItem post)
+                        {
+                            post.Body = removeTagFromBody(post.Body, hashtag);
+                            post.Save();
+                        }
+                        else if (itemObj is Outlook.JournalItem journal)
+                        {
+                            journal.Body = removeTagFromBody(journal.Body, hashtag);
+                            journal.Save();
+                        }
+                        removeItemHashtag(entryId, hashtag);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        // Handle or log exception if needed
+                        System.Diagnostics.Debug.WriteLine($"Failed to update item {entryId}: {ex.Message}");
+                    }
+                }
+            }
+        }
+
         public static void addItemHashtag(string itemId, string type,string hashtag)
         {
             Dictionary<string, ItemInfo> itemHashtags = HashtagStorage.loadAllItemHashtags();
@@ -88,6 +153,16 @@ namespace HashtagPlugin.Service
                     return appointmentItem.Body;
                 case Outlook.ContactItem contactItem:
                     return contactItem.Body;
+                case Outlook.TaskItem taskItem:
+                    return taskItem.Body;
+                case Outlook.MeetingItem meetingItem:
+                    return meetingItem.Body;
+                case Outlook.NoteItem noteItem:
+                    return noteItem.Body;
+                case Outlook.PostItem postItem:
+                    return postItem.Body;
+                case Outlook.JournalItem journalItem:
+                    return journalItem.Body;
                 default:
                     throw new ArgumentException("Unsupported Outlook item type.");
             }
@@ -106,6 +181,21 @@ namespace HashtagPlugin.Service
                 case Outlook.ContactItem contactItem:
                     contactItem.Body = newBody;
                     break;
+                case Outlook.TaskItem taskItem:
+                    taskItem.Body = newBody;
+                    break;
+                case Outlook.MeetingItem meetingItem:
+                    meetingItem.Body = newBody;
+                    break;
+                case Outlook.NoteItem noteItem:
+                    noteItem.Body = newBody;
+                    break;
+                case Outlook.PostItem postItem:
+                    postItem.Body = newBody;
+                    break;
+                case Outlook.JournalItem journalItem:
+                    journalItem.Body = newBody;
+                    break;
                 default:
                     throw new ArgumentException("Unsupported Outlook item type.");
             }
@@ -120,6 +210,16 @@ namespace HashtagPlugin.Service
                     return appointmentItem.EntryID;
                 case Outlook.ContactItem contactItem:
                     return contactItem.EntryID;
+                case Outlook.TaskItem taskItem:
+                    return taskItem.EntryID;
+                case Outlook.MeetingItem meetingItem:
+                    return meetingItem.EntryID;
+                case Outlook.NoteItem noteItem:
+                    return noteItem.EntryID;
+                case Outlook.PostItem postItem:
+                    return postItem.EntryID;
+                case Outlook.JournalItem journalItem:
+                    return journalItem.EntryID;
                 default:
                     throw new ArgumentException("Unsupported Outlook item type.");
             }
@@ -136,6 +236,21 @@ namespace HashtagPlugin.Service
                     break;
                 case Outlook.ContactItem contactItem:
                     contactItem.Save();
+                    break;
+                case Outlook.TaskItem taskItem:
+                    taskItem.Save();
+                    break;
+                case Outlook.MeetingItem meetingItem:
+                    meetingItem.Save();
+                    break;
+                case Outlook.NoteItem noteItem:
+                    noteItem.Save();
+                    break;
+                case Outlook.PostItem postItem:
+                    postItem.Save();
+                    break;
+                case Outlook.JournalItem journalItem:
+                    journalItem.Save();
                     break;
                 default:
                     throw new ArgumentException("Unsupported Outlook item type.");
@@ -172,6 +287,37 @@ namespace HashtagPlugin.Service
                     type = "Contact";
                     itemId = contact.EntryID;
                     break;
+                case Outlook.TaskItem task:
+                    task.Body = appendHashtag(task.Body, hashtag);
+                    task.Save();
+                    type = "Task";
+                    itemId = task.EntryID;
+                    break;
+                case Outlook.MeetingItem meeting:
+                    meeting.Body = appendHashtag(meeting.Body, hashtag);
+                    meeting.Save();
+                    type = "Meeting";
+                    itemId = meeting.EntryID;
+                    break;
+                case Outlook.NoteItem note:
+                    note.Body = appendHashtag(note.Body, hashtag);
+                    note.Save();
+                    type = "Note";
+                    itemId = note.EntryID;
+                    break;
+                case Outlook.PostItem post:
+                    post.Body = appendHashtag(post.Body, hashtag);
+                    post.Save();
+                    type = "Post";
+                    itemId = post.EntryID;
+                    break;
+                case Outlook.JournalItem journal:
+                    journal.Body = appendHashtag(journal.Body, hashtag);
+                    journal.Save();
+                    type = "Journal";
+                    itemId = journal.EntryID;
+                    break;
+
                 default:
                     throw new ArgumentException("Unsupported item type.");
             }
@@ -235,6 +381,32 @@ namespace HashtagPlugin.Service
                     contact.Save();
                     itemId = contact.EntryID;
                     break;
+                case Outlook.TaskItem task:
+                    task.Body = removeTagFromBody(task.Body, hashtag);
+                    task.Save();
+                    itemId = task.EntryID;
+                    break;
+                case Outlook.MeetingItem meeting:
+                    meeting.Body = removeTagFromBody(meeting.Body, hashtag);
+                    meeting.Save();
+                    itemId = meeting.EntryID;
+                    break;
+                case Outlook.NoteItem note:
+                    note.Body = removeTagFromBody(note.Body, hashtag);
+                    note.Save();
+                    itemId = note.EntryID;
+                    break;
+                case Outlook.PostItem post:
+                    post.Body = removeTagFromBody(post.Body, hashtag);
+                    post.Save();
+                    itemId = post.EntryID;
+                    break;
+                case Outlook.JournalItem journal:
+                    journal.Body = removeTagFromBody(journal.Body, hashtag);
+                    journal.Save();
+                    itemId = journal.EntryID;
+                    break;
+
                 default:
                     throw new ArgumentException("Unsupported item type.");
             }

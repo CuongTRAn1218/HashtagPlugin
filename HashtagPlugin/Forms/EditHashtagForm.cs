@@ -31,6 +31,26 @@ namespace HashtagPlugin.Forms
                 this.originalContent = contact.Body;
                 loadHashtags(contact.EntryID);
             }
+            else if (item is Outlook.TaskItem task)
+            {
+                this.originalContent = task.Body;
+                loadHashtags(task.EntryID);
+            }
+            else if (item is Outlook.PostItem post)
+            {
+                this.originalContent = post.Body;
+                loadHashtags(post.EntryID);
+            }
+            else if (item is Outlook.NoteItem note)
+            {
+                this.originalContent = note.Body;
+                loadHashtags(note.EntryID);
+            }
+            else if (item is Outlook.MeetingItem meeting)
+            {
+                this.originalContent = meeting.Body;
+                loadHashtags(meeting.EntryID);
+            }
             else
             {
                 throw new ArgumentException("Unsupported Outlook item type.");
