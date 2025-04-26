@@ -52,11 +52,6 @@ namespace HashtagPlugin
                     var form = new EditHashtagForm(noteItem);
                     form.ShowDialog();
                 }
-                else if (selectedItem is Outlook.MeetingItem meetingItem)
-                {
-                    var form = new EditHashtagForm(meetingItem);
-                    form.ShowDialog();
-                }
 
                 else
                 {

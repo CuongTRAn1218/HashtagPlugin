@@ -49,13 +49,6 @@ namespace HashtagPlugin.Forms
                     itemSubject = task.Subject;
                     itemBody = task.Body;
                 }
-                else if (item is Outlook.MeetingItem meeting)
-                {
-                    this.Text = "Add Hashtag for Meeting Request";
-                    entryId = meeting.EntryID;
-                    itemSubject = meeting.Subject;
-                    itemBody = meeting.Body;
-                }
                 else if (item is Outlook.NoteItem note)
                 {
                     this.Text = "Add Hashtag for Note";

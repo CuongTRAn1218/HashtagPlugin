@@ -35,7 +35,6 @@ namespace HashtagPlugin.Forms
                 { "Task", new List<(string, object)>() },
                 { "Post", new List<(string, object)>() },
                 { "Note", new List<(string, object)>() },
-                { "Meeting", new List<(string, object)>() }
 
             };
 
@@ -62,8 +61,7 @@ namespace HashtagPlugin.Forms
                         groupedItems["Post"].Add((itemId, item));
                     else if (item is Outlook.NoteItem)
                         groupedItems["Note"].Add((itemId, item));
-                    else if (item is Outlook.MeetingItem)
-                        groupedItems["Meeting"].Add((itemId, item));
+
                 }
                 catch (Exception ex)
                 {
@@ -144,10 +142,6 @@ namespace HashtagPlugin.Forms
             else if (item is Outlook.NoteItem note)
             {
                 displayText = $"\U0001F4DD {note.Subject}\nCreated: {note.CreationTime:g}";
-            }
-            else if (item is Outlook.MeetingItem meeting)
-            {
-                displayText = $"\U0001F4C6 {meeting.Subject}\n";
             }
             else
             {

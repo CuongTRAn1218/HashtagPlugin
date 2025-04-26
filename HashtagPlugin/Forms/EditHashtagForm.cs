@@ -46,11 +46,7 @@ namespace HashtagPlugin.Forms
                 this.originalContent = note.Body;
                 loadHashtags(note.EntryID);
             }
-            else if (item is Outlook.MeetingItem meeting)
-            {
-                this.originalContent = meeting.Body;
-                loadHashtags(meeting.EntryID);
-            }
+           
             else
             {
                 throw new ArgumentException("Unsupported Outlook item type.");

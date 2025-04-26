@@ -157,6 +157,22 @@ namespace HashtagPlugin.Forms
                         {
                             subject = $"{appt.Subject} Start: {appt.Start:g} Location: {appt.Location}";
                         }
+                        else if (item is Outlook.TaskItem task)
+                        {
+                            subject = $"{task.Subject} Due: {task.DueDate:g} Status: {task.Status}";
+                        }
+                        else if (item is Outlook.NoteItem note)
+                        {
+                            subject = $"{note.Subject} Created: {note.CreationTime:g}";
+                        }
+                        else if (item is Outlook.PostItem post)
+                        {
+                            subject = $"{post.Subject} Created: {post.CreationTime:g}";
+                        }
+                        else
+                        {
+                            subject = "Unknown item type";
+                        }
                     }
                 }
                 catch (Exception ex)
