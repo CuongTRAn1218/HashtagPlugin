@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
 using HashtagPlugin.Storage;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Net.Http;
 using System.Text.Json;
+using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
+using System.Text.RegularExpressions;
 namespace HashtagPlugin.Service
 {
     public static class HashtagService
@@ -402,14 +406,14 @@ namespace HashtagPlugin.Service
         }
 
         //Generate Hashtag
-        public static List<string> ExtractHashtags(string text, List<string> alreadyAdded)
+        public static List<string> ExtractHashtags(string text)
         {
             var words = text.Split(new[] { ' ', '\n', '\r', ',', '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
             var hashtags = new HashSet<string>();
 
             foreach (var word in words)
             {
-                if (word.StartsWith("#") && word.Length > 1 && word.Skip(1).All(char.IsLetterOrDigit)&& !alreadyAdded.Contains(word))
+                if (word.StartsWith("#") && word.Length > 1 && word.Skip(1).All(char.IsLetterOrDigit))
                 {
                     hashtags.Add(word);
                 }
@@ -418,10 +422,10 @@ namespace HashtagPlugin.Service
             return hashtags.ToList();
         }
 
-        public static async Task<List<string>> GenerateHashtagsFromOllamac(string content, List<string> alreadyAdded)
+        public static async Task<List<string>> GenerateHashtagsFromOllama(string content)
         {
             string existingHashtags = string.Join(",",loadHashtags());
-
+            content = CondenseContent(content, 1000);
             var httpClient = new HttpClient();
             var requestData = new
             {
@@ -435,7 +439,96 @@ namespace HashtagPlugin.Service
 
             var response = await httpClient.PostAsync("http://localhost:11434/api/generate", contentw);
             var responseText = await response.Content.ReadAsStringAsync();
-            return ExtractHashtags(responseText,alreadyAdded);
+            return ExtractHashtags(responseText);
         }
+
+        public static async Task<List<string>> GenerateHashtagsFromAPIVerse(string content)
+        {
+            int count = 5;
+            int maxContentLength = 500;
+            var client = new HttpClient();
+        
+            try
+            {
+                if (content.Length > maxContentLength)
+                {
+                    content = CondenseContent(content, maxContentLength);
+                    MessageBox.Show("Content was too long, truncated to: " + content);
+                }
+                var requestData = new
+                {
+                    text = content,
+                    count = count
+                };
+                var json = JsonSerializer.Serialize(requestData);
+                var contentw = new StringContent(json, Encoding.UTF8, "application/json");
+
+                client.DefaultRequestHeaders.Add("x-api-key", "c4a115e8-aadd-41e3-9f95-8a5a595c801c");
+
+                var response = await client.PostAsync(
+                    "https://api.apiverve.com/v1/hashtaggenerator", 
+                    contentw);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    return ExtractAPIHashtags(body);
+                }
+                else
+                {
+                    MessageBox.Show($"Error: {response.StatusCode}");
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Details: {errorContent}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Exception: {ex.Message}");
+            }
+            return null;
+        }
+        private static List<string> ExtractAPIHashtags(string json)
+        {
+            var jsonDoc = JsonDocument.Parse(json);
+
+            var hashtags = jsonDoc.RootElement
+                                  .GetProperty("data")
+                                  .GetProperty("hashtags")
+                                  .EnumerateArray();
+            List<string> hashtagList = new List<string>();
+            foreach (var hashtag in hashtags)
+            {
+                hashtagList.Add(hashtag.GetString());
+            }
+
+            return hashtagList;
+        }
+
+        private static string CondenseContent(string content, int maxLength)
+        {
+            content = RemoveUrls(content);
+            content = content.Replace("\n", " ").Replace("\r", "");
+            content = Regex.Replace(content, @"\s+", " ").Trim();
+            
+            if (content.Length > maxLength)
+            {
+                content = content.Substring(0, maxLength);
+                int lastSpaceIndex = content.LastIndexOf(' ');
+                if (lastSpaceIndex > 0)
+                {
+                    content = content.Substring(0, lastSpaceIndex);
+                }
+
+            }
+
+            return content;
+        }
+
+        private static string RemoveUrls(string content)
+        {
+            var regex = new Regex(@"http[^\s]+", RegexOptions.IgnoreCase);
+            return regex.Replace(content, string.Empty);
+        }
+
     }
 }

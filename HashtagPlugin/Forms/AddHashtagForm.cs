@@ -64,7 +64,7 @@ namespace HashtagPlugin.Forms
                     itemBody = post.Body;
                 }
                 this.lblItemHashtag.Text = string.Join(" ",HashtagService.loadItemHashtags(entryId));
-                getSuggestions(itemSubject+"\n"+itemBody);
+                getSuggestions(itemSubject.Trim()+""+itemBody.Trim());
             }
             catch (Exception ex)
             {
@@ -178,7 +178,7 @@ namespace HashtagPlugin.Forms
 
             try
             {
-                List<string> hashtags = await HashtagService.GenerateHashtagsFromOllamac(body,HashtagService.loadItemHashtags(entryId));
+                List<string> hashtags = await HashtagService.GenerateHashtagsFromOllama(body);
                 flpSuggesttion.Controls.Clear();
                 foreach (string hashtag in hashtags)
                 {
