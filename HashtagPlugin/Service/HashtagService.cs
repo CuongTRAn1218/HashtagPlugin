@@ -425,7 +425,7 @@ namespace HashtagPlugin.Service
         public static async Task<List<string>> GenerateHashtagsFromOllama(string content)
         {
             string existingHashtags = string.Join(",",loadHashtags());
-            content = CondenseContent(content, 1000);
+            content = CondenseContent(content, 10000);
             var httpClient = new HttpClient();
             var requestData = new
             {
