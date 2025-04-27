@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http.Headers;
+using dotenv.net;
 using HashtagPlugin.Storage;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Net.Http;
 using System.Text.Json;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using System.Text.RegularExpressions;
+using System.IO;
 namespace HashtagPlugin.Service
 {
     public static class HashtagService
@@ -450,6 +450,12 @@ namespace HashtagPlugin.Service
         
             try
             {
+                DotNetEnv.Env.Load();
+                //var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+                //MessageBox.Show($"Looking for .env at: {envPath}");
+                //MessageBox.Show($"File exists: {File.Exists(envPath)}");
+                string apiKey = Environment.GetEnvironmentVariable("API_KEY");
+                MessageBox.Show("API Key: " + apiKey); 
                 if (content.Length > maxContentLength)
                 {
                     content = CondenseContent(content, maxContentLength);
@@ -463,7 +469,7 @@ namespace HashtagPlugin.Service
                 var json = JsonSerializer.Serialize(requestData);
                 var contentw = new StringContent(json, Encoding.UTF8, "application/json");
 
-                client.DefaultRequestHeaders.Add("x-api-key", "c4a115e8-aadd-41e3-9f95-8a5a595c801c");
+                client.DefaultRequestHeaders.Add("x-api-key", apiKey);
 
                 var response = await client.PostAsync(
                     "https://api.apiverve.com/v1/hashtaggenerator", 

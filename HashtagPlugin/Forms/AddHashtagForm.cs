@@ -178,7 +178,7 @@ namespace HashtagPlugin.Forms
 
             try
             {
-                List<string> hashtags = await HashtagService.GenerateHashtagsFromOllama(body);
+                List<string> hashtags = await HashtagService.GenerateHashtagsFromAPIVerse(body);
                 flpSuggesttion.Controls.Clear();
                 foreach (string hashtag in hashtags)
                 {
