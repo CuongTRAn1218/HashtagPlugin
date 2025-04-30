@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using dotenv.net;
 using HashtagPlugin.Storage;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Net.Http;
 using System.Text.Json;
-using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using System.IO;
+using System.Windows.Forms;
 namespace HashtagPlugin.Service
 {
     public static class HashtagService
@@ -22,7 +20,31 @@ namespace HashtagPlugin.Service
         }
         public static Dictionary<string, ItemInfo> loadAllItemHashtags()
         {
-            return HashtagStorage.loadAllItemHashtags();
+            Dictionary<string, ItemInfo> itemHashtags = HashtagStorage.loadAllItemHashtags();
+            Outlook.Application outlookApp = new Outlook.Application();
+            List<string> entriesToRemove = new List<string>();
+
+            foreach (var item in itemHashtags) {
+                string entryId = item.Key;
+                try
+                {
+                    var outlookItem = outlookApp.Session.GetItemFromID(entryId);
+                    if (outlookItem == null)
+                    {
+                        entriesToRemove.Add(entryId);
+                    }
+                }
+                catch 
+                {
+                    entriesToRemove.Add(entryId);
+                }
+            }
+            foreach (var entryId in entriesToRemove)
+            {
+                itemHashtags.Remove(entryId);
+            }
+            HashtagStorage.saveItemHashtags(itemHashtags);
+            return itemHashtags;
         }
         public static bool addHashtag(string hashtag)
         {
@@ -94,7 +116,6 @@ namespace HashtagPlugin.Service
                     }
                     catch (System.Exception ex)
                     {
-                        // Handle or log exception if needed
                         System.Diagnostics.Debug.WriteLine($"Failed to update item {entryId}: {ex.Message}");
                     }
                 }
@@ -129,7 +150,7 @@ namespace HashtagPlugin.Service
         }
         public static List<string> loadItemHashtags(string itemId)
         {
-            var itemHashtags = HashtagStorage.loadAllItemHashtags();
+            var itemHashtags = loadAllItemHashtags();
             return itemHashtags.TryGetValue(itemId, out var info) ? info.Hashtags : new List<string>();
         }   
         public static bool checkHashtag(string hashtag)
@@ -158,86 +179,6 @@ namespace HashtagPlugin.Service
             }
         }
 
-        public static void setItemBody(object outlookItem, string newBody)
-        {
-            switch (outlookItem)
-            {
-                case Outlook.MailItem mailItem:
-                    mailItem.Body = newBody;
-                    break;
-                case Outlook.AppointmentItem appointmentItem:
-                    appointmentItem.Body = newBody;
-                    break;
-                case Outlook.ContactItem contactItem:
-                    contactItem.Body = newBody;
-                    break;
-                case Outlook.TaskItem taskItem:
-                    taskItem.Body = newBody;
-                    break;
-                case Outlook.NoteItem noteItem:
-                    noteItem.Body = newBody;
-                    break;
-                case Outlook.PostItem postItem:
-                    postItem.Body = newBody;
-                    break;
-
-                default:
-                    throw new ArgumentException("Unsupported Outlook item type.");
-            }
-        }
-        public static string getItemEntryID(object outlookItem)
-        {
-            switch (outlookItem)
-            {
-                case Outlook.MailItem mailItem:
-                    return mailItem.EntryID;
-                case Outlook.AppointmentItem appointmentItem:
-                    return appointmentItem.EntryID;
-                case Outlook.ContactItem contactItem:
-                    return contactItem.EntryID;
-                case Outlook.TaskItem taskItem:
-                    return taskItem.EntryID;
-                case Outlook.NoteItem noteItem:
-                    return noteItem.EntryID;
-                case Outlook.PostItem postItem:
-                    return postItem.EntryID;
-
-                default:
-                    throw new ArgumentException("Unsupported Outlook item type.");
-            }
-        }
-        public static void saveItem(object outlookItem)
-        {
-            switch (outlookItem)
-            {
-                case Outlook.MailItem mailItem:
-                    mailItem.Save();
-                    break;
-                case Outlook.AppointmentItem appointmentItem:
-                    appointmentItem.Save();
-                    break;
-                case Outlook.ContactItem contactItem:
-                    contactItem.Save();
-                    break;
-                case Outlook.TaskItem taskItem:
-                    taskItem.Save();
-                    break;
-                case Outlook.NoteItem noteItem:
-                    noteItem.Save();
-                    break;
-                case Outlook.PostItem postItem:
-                    postItem.Save();
-                    break;
-
-                default:
-                    throw new ArgumentException("Unsupported Outlook item type.");
-            }
-        }
-
-
-
-
-
         //Add Hashtag
         public static void addItemHashtag(object item, string hashtag)
         {
@@ -247,36 +188,42 @@ namespace HashtagPlugin.Service
             switch (item)
             {
                 case Outlook.MailItem mail:
+                    mail.Save();
                     mail.Body = appendHashtag(mail.Body, hashtag);
                     mail.Save();
                     type = "Mail";
                     itemId = mail.EntryID;
                     break;
                 case Outlook.AppointmentItem appt:
+                    appt.Save();
                     appt.Body = appendHashtag(appt.Body, hashtag);
                     appt.Save();
                     type = "Appointment";
                     itemId = appt.EntryID;
                     break;
                 case Outlook.ContactItem contact:
+                    contact.Save();
                     contact.Body = appendHashtag(contact.Body, hashtag);
                     contact.Save();
                     type = "Contact";
                     itemId = contact.EntryID;
                     break;
                 case Outlook.TaskItem task:
+                    task.Save();
                     task.Body = appendHashtag(task.Body, hashtag);
                     task.Save();
                     type = "Task";
                     itemId = task.EntryID;
                     break;
                 case Outlook.NoteItem note:
+                    note.Save();
                     note.Body = appendHashtag(note.Body, hashtag);
                     note.Save();
                     type = "Note";
                     itemId = note.EntryID;
                     break;
                 case Outlook.PostItem post:
+                    post.Save();
                     post.Body = appendHashtag(post.Body, hashtag);
                     post.Save();
                     type = "Post";
@@ -425,97 +372,30 @@ namespace HashtagPlugin.Service
         public static async Task<List<string>> GenerateHashtagsFromOllama(string content)
         {
             string existingHashtags = string.Join(",",loadHashtags());
-            content = CondenseContent(content, 10000);
+            content = CondenseContent(content, 1000);
             var httpClient = new HttpClient();
             var requestData = new
             {
                 model = "gemma3",
-                prompt = $"\"Generate under 10 hashtags also check and take any relevant hashtag in this{existingHashtags} for:{content} \nonly use lowercase letters. only output the hashtags comma-seprated.\"",
+                prompt = $"\"Suggest 5–10 relevant lowercase hashtags(start with #) for the following content (comma-separated only): {content}\r\nAlso reuse any existing hashtags if relevant: {existingHashtags}\r\n\"",
                 stream = false
             };
 
             var json = JsonSerializer.Serialize(requestData);
             var contentw = new StringContent(json, Encoding.UTF8, "application/json");
 
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             var response = await httpClient.PostAsync("http://localhost:11434/api/generate", contentw);
+            sw.Stop();
             var responseText = await response.Content.ReadAsStringAsync();
             return ExtractHashtags(responseText);
-        }
-
-        public static async Task<List<string>> GenerateHashtagsFromAPIVerse(string content)
-        {
-            int count = 5;
-            int maxContentLength = 500;
-            var client = new HttpClient();
-        
-            try
-            {
-                DotNetEnv.Env.Load();
-                //var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-                //MessageBox.Show($"Looking for .env at: {envPath}");
-                //MessageBox.Show($"File exists: {File.Exists(envPath)}");
-                string apiKey = Environment.GetEnvironmentVariable("API_KEY");
-                MessageBox.Show("API Key: " + apiKey); 
-                if (content.Length > maxContentLength)
-                {
-                    content = CondenseContent(content, maxContentLength);
-                    MessageBox.Show("Content was too long, truncated to: " + content);
-                }
-                var requestData = new
-                {
-                    text = content,
-                    count = count
-                };
-                var json = JsonSerializer.Serialize(requestData);
-                var contentw = new StringContent(json, Encoding.UTF8, "application/json");
-
-                client.DefaultRequestHeaders.Add("x-api-key", apiKey);
-
-                var response = await client.PostAsync(
-                    "https://api.apiverve.com/v1/hashtaggenerator", 
-                    contentw);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var body = await response.Content.ReadAsStringAsync();
-                    return ExtractAPIHashtags(body);
-                }
-                else
-                {
-                    MessageBox.Show($"Error: {response.StatusCode}");
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    MessageBox.Show($"Details: {errorContent}");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Exception: {ex.Message}");
-            }
-            return null;
-        }
-        private static List<string> ExtractAPIHashtags(string json)
-        {
-            var jsonDoc = JsonDocument.Parse(json);
-
-            var hashtags = jsonDoc.RootElement
-                                  .GetProperty("data")
-                                  .GetProperty("hashtags")
-                                  .EnumerateArray();
-            List<string> hashtagList = new List<string>();
-            foreach (var hashtag in hashtags)
-            {
-                hashtagList.Add(hashtag.GetString());
-            }
-
-            return hashtagList;
         }
 
         private static string CondenseContent(string content, int maxLength)
         {
             content = RemoveUrls(content);
-            content = content.Replace("\n", " ").Replace("\r", "");
+            content = Regex.Replace(content, @"[^a-zA-Z0-9\s]", "");
             content = Regex.Replace(content, @"\s+", " ").Trim();
-            
             if (content.Length > maxLength)
             {
                 content = content.Substring(0, maxLength);
@@ -524,15 +404,13 @@ namespace HashtagPlugin.Service
                 {
                     content = content.Substring(0, lastSpaceIndex);
                 }
-
             }
 
             return content;
         }
-
         private static string RemoveUrls(string content)
         {
-            var regex = new Regex(@"http[^\s]+", RegexOptions.IgnoreCase);
+            var regex = new Regex(@"\b(?:https?://|www\.)\S+\b", RegexOptions.IgnoreCase);
             return regex.Replace(content, string.Empty);
         }
 

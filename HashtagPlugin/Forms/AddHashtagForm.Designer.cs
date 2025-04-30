@@ -40,6 +40,7 @@
             this.flpSuggesttion = new System.Windows.Forms.FlowLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
             this.lblItemHashtag = new System.Windows.Forms.Label();
+            this.lblPlace = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -125,6 +126,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.lblPlace);
             this.groupBox2.Controls.Add(this.flpSuggesttion);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.lblItemHashtag);
@@ -160,6 +162,15 @@
             this.lblItemHashtag.Size = new System.Drawing.Size(172, 16);
             this.lblItemHashtag.TabIndex = 0;
             this.lblItemHashtag.Text = "Item hashtags placeholders";
+            // 
+            // lblPlace
+            // 
+            this.lblPlace.AutoSize = true;
+            this.lblPlace.Location = new System.Drawing.Point(113, 99);
+            this.lblPlace.Name = "lblPlace";
+            this.lblPlace.Size = new System.Drawing.Size(82, 16);
+            this.lblPlace.TabIndex = 3;
+            this.lblPlace.Text = "Generating...";
             // 
             // AddHashtagForm
             // 
@@ -198,5 +209,6 @@
         private System.Windows.Forms.Label lblItemHashtag;
         private System.Windows.Forms.FlowLayoutPanel flpSuggesttion;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblPlace;
     }
 }

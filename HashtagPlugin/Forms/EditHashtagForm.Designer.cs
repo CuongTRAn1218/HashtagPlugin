@@ -31,8 +31,6 @@
             this.flpHashtags = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.btnAddHashtag = new System.Windows.Forms.Button();
-            this.btnSave = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // flpHashtags
@@ -55,7 +53,7 @@
             // 
             // btnAddHashtag
             // 
-            this.btnAddHashtag.Location = new System.Drawing.Point(405, 354);
+            this.btnAddHashtag.Location = new System.Drawing.Point(403, 472);
             this.btnAddHashtag.Name = "btnAddHashtag";
             this.btnAddHashtag.Size = new System.Drawing.Size(128, 41);
             this.btnAddHashtag.TabIndex = 2;
@@ -63,39 +61,16 @@
             this.btnAddHashtag.UseVisualStyleBackColor = true;
             this.btnAddHashtag.Click += new System.EventHandler(this.btnAddHashtag_Click);
             // 
-            // btnSave
-            // 
-            this.btnSave.Location = new System.Drawing.Point(405, 472);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(128, 41);
-            this.btnSave.TabIndex = 3;
-            this.btnSave.Text = "Save";
-            this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // btnCancel
-            // 
-            this.btnCancel.Location = new System.Drawing.Point(405, 412);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(128, 41);
-            this.btnCancel.TabIndex = 4;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
             // EditHashtagForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(554, 525);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnAddHashtag);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.flpHashtags);
             this.Name = "EditHashtagForm";
             this.Text = "Edit Hashtag";
-            this.Load += new System.EventHandler(this.EditHashtagForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -106,7 +81,5 @@
         private System.Windows.Forms.FlowLayoutPanel flpHashtags;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnAddHashtag;
-        private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnCancel;
     }
 }

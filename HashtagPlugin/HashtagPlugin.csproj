@@ -398,6 +398,12 @@
     <Compile Include="Forms\SearchHashtagForm.Designer.cs">
       <DependentUpon>SearchHashtagForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\StartUpForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StartUpForm.Designer.cs">
+      <DependentUpon>StartUpForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\UsedHashtagsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -412,6 +418,7 @@
     </Compile>
     <Compile Include="ItemInfo.cs" />
     <Compile Include="Service\HashtagService.cs" />
+    <Compile Include="Service\OllamaService.cs" />
     <Compile Include="Storage\HashtagStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -429,6 +436,9 @@
     <EmbeddedResource Include="Forms\SearchHashtagForm.resx">
       <DependentUpon>SearchHashtagForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StartUpForm.resx">
+      <DependentUpon>StartUpForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\UsedHashtagsForm.resx">
       <DependentUpon>UsedHashtagsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -443,6 +453,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="RibbonExplorer.resx">
       <DependentUpon>RibbonExplorer.cs</DependentUpon>
@@ -484,7 +495,13 @@
     </Compile>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="images\email.png" />
+    <None Include="Resources\view.png" />
+    <None Include="Resources\search.png" />
+    <None Include="Resources\edit.png" />
+    <None Include="Resources\add.png" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

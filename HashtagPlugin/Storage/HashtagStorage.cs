@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
 
 namespace HashtagPlugin.Storage
@@ -31,8 +28,6 @@ namespace HashtagPlugin.Storage
             string json = JsonSerializer.Serialize(hashtags, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(hashtagsFile, json);
         }
-
-
         // item hashtags
         public static Dictionary<string, ItemInfo> loadAllItemHashtags()
         {

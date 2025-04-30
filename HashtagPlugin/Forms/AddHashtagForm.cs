@@ -64,7 +64,7 @@ namespace HashtagPlugin.Forms
                     itemBody = post.Body;
                 }
                 this.lblItemHashtag.Text = string.Join(" ",HashtagService.loadItemHashtags(entryId));
-                getSuggestions(itemSubject.Trim()+""+itemBody.Trim());
+                getSuggestions((itemSubject?.Trim() ?? "") + (itemBody?.Trim() ?? ""));
             }
             catch (Exception ex)
             {
@@ -175,10 +175,10 @@ namespace HashtagPlugin.Forms
         }
         private async void getSuggestions(string body)
         {
-
+            flpSuggesttion.Enabled = false;
             try
             {
-                List<string> hashtags = await HashtagService.GenerateHashtagsFromAPIVerse(body);
+                List<string> hashtags = await HashtagService.GenerateHashtagsFromOllama(body);
                 flpSuggesttion.Controls.Clear();
                 foreach (string hashtag in hashtags)
                 {
@@ -190,16 +190,16 @@ namespace HashtagPlugin.Forms
             {
                 MessageBox.Show("Error generating hashtags:\n" + ex.Message);
             }
+            finally
+            {
+                flpSuggesttion.Enabled = true;
+                lblPlace.Visible = false;
+            }
         }
 
         private void ReloadForm()
         {
-            Form freshForm = new AddHashtagForm();
-            this.Hide();
-            freshForm.StartPosition = FormStartPosition.Manual;
-            freshForm.Location = this.Location;
-            this.Close();
-            freshForm.Show();
+            this.lblItemHashtag.Text = string.Join(" ", HashtagService.loadItemHashtags(entryId));
         }
     }
 }

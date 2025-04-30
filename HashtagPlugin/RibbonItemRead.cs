@@ -12,6 +12,13 @@ namespace HashtagPlugin
     {
         private void RibbonMailRead_Load(object sender, RibbonUIEventArgs e)
         {
+            btnAddHashtag.Image = Properties.Resources.add;
+            btnAddHashtag.ShowImage = true;
+            btnAddHashtag.ShowLabel = true;
+
+            btnEditHashtags.Image = Properties.Resources.edit;
+            btnEditHashtags.ShowImage = true;
+            btnEditHashtags.ShowLabel = true;
 
         }
 
@@ -26,31 +33,31 @@ namespace HashtagPlugin
                 if (selectedItem is Outlook.MailItem mailItem)
                 {
                     var form = new EditHashtagForm(mailItem);
-                    form.ShowDialog();
+                    form.Show();
                 }
                 else if (selectedItem is Outlook.AppointmentItem appointmentItem)
                 {
                     var form = new EditHashtagForm(appointmentItem);
-                    form.ShowDialog();
+                    form.Show();
                 }
                 else if (selectedItem is Outlook.ContactItem contactItem)
                 {
                     var form = new EditHashtagForm(contactItem);
-                    form.ShowDialog();
+                    form.Show();
                 }else if(selectedItem is Outlook.TaskItem taskItem)
                 {
                     var form = new EditHashtagForm(taskItem);
-                    form.ShowDialog();
+                    form.Show();
                 }
                 else if (selectedItem is Outlook.PostItem postItem)
                 {
                     var form = new EditHashtagForm(postItem);
-                    form.ShowDialog();
+                    form.Show();
                 }
                 else if (selectedItem is Outlook.NoteItem noteItem)
                 {
                     var form = new EditHashtagForm(noteItem);
-                    form.ShowDialog();
+                    form.Show();
                 }
 
                 else

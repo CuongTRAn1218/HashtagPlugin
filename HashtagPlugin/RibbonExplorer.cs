@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using HashtagPlugin.Forms;
+﻿using HashtagPlugin.Forms;
 using Microsoft.Office.Tools.Ribbon;
 
 namespace HashtagPlugin
@@ -11,7 +7,17 @@ namespace HashtagPlugin
     {
         private void RibbonMailExplorer_Load(object sender, RibbonUIEventArgs e)
         {
+            btnAddHashtag.Image = Properties.Resources.add;
+            btnAddHashtag.ShowImage = true;
+            btnAddHashtag.ShowLabel = true;
 
+            btnViewHashtags.Image = Properties.Resources.view;
+            btnViewHashtags.ShowImage = true;
+            btnViewHashtags.ShowLabel = true;
+
+            btnSearch.Image = Properties.Resources.search;
+            btnSearch.ShowImage = true;
+            btnSearch.ShowLabel = true;
         }
 
         private void btnAddHashtag_Click(object sender, RibbonControlEventArgs e)

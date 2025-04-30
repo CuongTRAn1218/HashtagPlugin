@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using HashtagPlugin.Service;
@@ -67,7 +66,7 @@ namespace HashtagPlugin.Forms
                 {
                     flpItems.Controls.Add(new Label
                     {
-                        Text = $"Unable to load item: {ex.Message}",
+                        Text = $"Unable to load item: {ex.Message} {itemId}",
                         ForeColor = Color.Red,
                         AutoSize = true
                     });
@@ -168,7 +167,7 @@ namespace HashtagPlugin.Forms
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Unable to open item: " + ex.Message);
+                MessageBox.Show("Unable to open item: " + ex.Message + entryId);
             }
         }
     }

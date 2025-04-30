@@ -9,7 +9,6 @@ namespace HashtagPlugin.Forms
     public partial class EditHashtagForm : Form
     {
         private object outlookItem;
-        private string originalContent;
 
         public EditHashtagForm(object item)
         {
@@ -18,32 +17,31 @@ namespace HashtagPlugin.Forms
 
             if (item is Outlook.MailItem mail)
             {
-                this.originalContent = mail.Body;
                 loadHashtags(mail.EntryID);
             }
             else if (item is Outlook.AppointmentItem appointment)
             {
-                this.originalContent = appointment.Body;
+
                 loadHashtags(appointment.EntryID);
             }
             else if (item is Outlook.ContactItem contact)
             {
-                this.originalContent = contact.Body;
+ 
                 loadHashtags(contact.EntryID);
             }
             else if (item is Outlook.TaskItem task)
             {
-                this.originalContent = task.Body;
+
                 loadHashtags(task.EntryID);
             }
             else if (item is Outlook.PostItem post)
             {
-                this.originalContent = post.Body;
+
                 loadHashtags(post.EntryID);
             }
             else if (item is Outlook.NoteItem note)
             {
-                this.originalContent = note.Body;
+
                 loadHashtags(note.EntryID);
             }
            
@@ -91,7 +89,6 @@ namespace HashtagPlugin.Forms
 
             }
         }
-
         private void ReloadForm()
         {
             Form freshForm = new EditHashtagForm(outlookItem);
@@ -104,37 +101,9 @@ namespace HashtagPlugin.Forms
 
         private void btnAddHashtag_Click(object sender, EventArgs e)
         {
-            originalContent = HashtagService.getItemBody(outlookItem);
             var form = new AddHashtagForm();
             form.ShowDialog();
             ReloadForm();
-        }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Save changes?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                HashtagService.saveItem(outlookItem);
-                ReloadForm();
-            }
-        }
-
-        private void btnCancel_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show($"Cancel changes made?", "Cancel changes", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                if (MessageBox.Show("Cancel changes made?", "Cancel changes", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    HashtagService.setItemBody(outlookItem, originalContent);
-                    HashtagService.saveItem(outlookItem);
-                    ReloadForm();
-                }
-            }
-        }
-
-        private void EditHashtagForm_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }

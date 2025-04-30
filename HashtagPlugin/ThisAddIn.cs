@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Office = Microsoft.Office.Core;
 using System.Windows.Forms;
+using HashtagPlugin.Forms;
 
 namespace HashtagPlugin
 {
@@ -13,7 +14,8 @@ namespace HashtagPlugin
     {
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
-            MessageBox.Show("Hashtag Plugin for Outlook Started");
+            var start = new StartForm();
+            start.ShowDialog();
 
         }
 

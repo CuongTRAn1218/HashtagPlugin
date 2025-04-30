@@ -128,7 +128,6 @@
             this.Controls.Add(this.txtSearch);
             this.Name = "SearchHashtagForm";
             this.Text = "SearchHashtagForm";
-            this.Load += new System.EventHandler(this.SearchHashtagForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvResult)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
